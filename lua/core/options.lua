@@ -52,3 +52,4 @@ vim.opt.synmaxcol = 240
 vim.opt.updatetime = 200
 vim.opt.redrawtime = 10000
 vim.opt.maxmempattern = 20000
+vim.opt.shortmess:append("I")
