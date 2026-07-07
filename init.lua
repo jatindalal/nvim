@@ -16,11 +16,9 @@ require("lazy").setup({
 	require("plugins.colorscheme"),
 	require("plugins.editor"),
 	require("plugins.neotree"),
-	require("plugins.treesitter"),
 	require("plugins.telescope"),
-	require("plugins.completions"),
 	require("plugins.formatter"),
-	require("plugins.debug"),
+	-- require("plugins.debug"),
 }, {
 	ui = {
 		icons = {

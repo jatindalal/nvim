@@ -4,6 +4,10 @@ return {
 		dependencies = {
 			"rcarriga/nvim-dap-ui",
 			"theHamsta/nvim-dap-virtual-text",
+			{
+				"mason-org/mason.nvim",
+				opts = {},
+			},
 			"jay-babu/mason-nvim-dap.nvim",
 			"nvim-neotest/nvim-nio",
 		},
