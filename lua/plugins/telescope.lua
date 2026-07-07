@@ -24,8 +24,8 @@ return {
 		vim.keymap.set("n", ";t", builtin.help_tags, { desc = "[S]earch [H]elp" })
 		vim.keymap.set("n", ";f", builtin.find_files, { desc = "[S]earch [F]iles" })
 		vim.keymap.set("n", ";r", builtin.live_grep, { desc = "[S]earch by [G]rep" })
-		vim.keymap.set("n", ";e", builtin.diagnostics, { desc = "[S]earch [D]iagnostics" })
 		vim.keymap.set("n", ";b", builtin.buffers, { desc = "[S]earch [B]uffers" })
+		vim.keymap.set("n", ";;", builtin.current_buffer_fuzzy_find, { desc = "search in current buffer"})
 		-- Shortcut for searching your Neovim configuration files
 		vim.keymap.set("n", ";c", function()
 			builtin.find_files({ cwd = vim.fn.stdpath("config") })
