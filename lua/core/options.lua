@@ -33,7 +33,7 @@ vim.o.splitright = true
 vim.o.mouse = ""
 
 vim.opt.foldmethod = "expr"
-vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldexpr = "v:lua.vim.lsp.foldexpr()"
 vim.opt.foldlevel = 99
 
 vim.o.list = true
