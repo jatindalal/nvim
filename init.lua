@@ -18,8 +18,8 @@ require("lazy").setup({
 	require("plugins.neotree"),
 	require("plugins.telescope"),
 	require("plugins.formatter"),
-	require("plugins.debug"),
-	require("plugins.lsp"),
+	-- require("plugins.debug"),
+	-- require("plugins.lsp"),
 }, {
 	ui = {
 		icons = {
