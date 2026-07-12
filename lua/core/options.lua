@@ -24,7 +24,6 @@ vim.opt.termguicolors = true
 vim.o.swapfile = false
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
-vim.opt.fillchars:append({ eob = " " })
 
 vim.opt.showmode = false
 vim.o.splitbelow = true
@@ -52,4 +51,6 @@ vim.opt.synmaxcol = 240
 vim.opt.updatetime = 200
 vim.opt.redrawtime = 10000
 vim.opt.maxmempattern = 20000
+
+-- no banner
 vim.opt.shortmess:append("I")
