@@ -1,31 +1,30 @@
 local M = {}
 
 local palette = {
-  alt = "#bd8073",
-  alt_bg = "#211d1a",
-  bg = "#080706",
-  comment = "#686159",
-  constant = "#ded6a8",
-  fg = "#e8e1c3",
-  func = "#bcb59e",
-  keyword = "#c98e7c",
-  line = "#080706",
-  number = "#d0a084",
-  operator = "#a39a88",
-  property = "#ded6a8",
-  string = "#f0ebcf",
-  type = "#8bb9ae",
-  visual = "#3f362f",
-  diag_red = "#d66f68",
-  diag_blue = "#a0ada6",
-  diag_yellow = "#d0a084",
-  diag_green = "#8bb9ae",
+  alt = "#E46876",
+  alt_bg = "#2A2A37",
+  bg = "#1F1F28",
+  comment = "#727169",
+  constant = "#FFA066",
+  fg = "#DCD7BA",
+  func = "#7E9CD8",
+  keyword = "#957FB8",
+  line = "#1F1F28",
+  number = "#D27E99",
+  operator = "#C0A36E",
+  property = "#E6C384",
+  string = "#98BB6C",
+  type = "#7AA89F",
+  visual = "#223249",
+  search = "#2D4F67",
+  diag_red = "#E82424",
+  diag_blue = "#658594",
+  diag_yellow = "#FF9E3B",
+  diag_green = "#98BB6C",
 }
 
 local defaults = {
-  variant = 1,
-  alt_background = false,
-  transparent = false,
+  transparent = true,
   dim_inactive = false,
   italic_comments = true,
   terminal_colors = true,
@@ -40,10 +39,6 @@ end
 
 local function colors()
   local c = vim.deepcopy(palette)
-  if options.alt_background then
-    c.bg = c.alt_bg
-    c.line = c.alt_bg
-  end
   if options.transparent then
     c.bg = "NONE"
     c.line = "NONE"
@@ -54,8 +49,6 @@ end
 local function global_options()
   local result = {}
   local map = {
-    variant = "nononsense_variant",
-    alt_background = "nononsense_alt_background",
     transparent = "nononsense_transparent",
     dim_inactive = "nononsense_dim_inactive",
     italic_comments = "nononsense_italic_comments",
@@ -81,22 +74,22 @@ end
 
 local function apply_terminal(c)
   local terminal = {
-    c.alt_bg,
-    c.diag_red,
-    c.diag_green,
-    c.func,
-    c.constant,
-    c.keyword,
-    c.string,
-    c.fg,
-    c.comment,
-    c.diag_red,
-    c.property,
-    c.number,
-    c.diag_blue,
-    c.type,
-    c.alt,
-    c.fg,
+    "#16161D",
+    "#C34043",
+    "#76946A",
+    "#C0A36E",
+    "#7E9CD8",
+    "#957FB8",
+    "#6A9589",
+    "#C8C093",
+    "#727169",
+    "#E82424",
+    "#98BB6C",
+    "#E6C384",
+    "#7FB4CA",
+    "#938AA9",
+    "#7AA89F",
+    "#DCD7BA",
   }
 
   for index, color in ipairs(terminal) do
@@ -107,18 +100,17 @@ end
 local function apply_highlights(c)
   local bg = c.bg
   local none = "NONE"
-  local float_bg = options.transparent and none or c.alt_bg
   local gutter_bg = none
   local cursorline = options.transparent and none or c.alt_bg
 
   set("Normal", { fg = c.fg, bg = bg })
   set("NormalNC", { fg = c.fg, bg = options.dim_inactive and c.alt_bg or bg })
-  set("NormalFloat", { fg = c.fg, bg = "NONE" })
-  set("FloatBorder", { fg = c.comment, bg = "NONE" })
-  set("FloatTitle", { fg = c.keyword, bg = "NONE", bold = true })
-  set("ColorColumn", { bg = c.alt_bg })
+  set("NormalFloat", { fg = c.fg, bg = none })
+  set("FloatBorder", { fg = c.comment, bg = none })
+  set("FloatTitle", { fg = c.keyword, bg = none, bold = true })
+  set("ColorColumn", { bg = cursorline })
   set("Conceal", { fg = c.comment })
-  set("Cursor", { fg = c.bg, bg = c.fg })
+  set("Cursor", { fg = palette.bg, bg = c.fg })
   set("CursorColumn", { bg = cursorline })
   set("CursorLine", { bg = cursorline })
   set("CursorLineNr", { fg = c.fg, bg = gutter_bg, bold = true })
@@ -126,62 +118,62 @@ local function apply_highlights(c)
   set("EndOfBuffer", { fg = c.fg })
   set("ErrorMsg", { fg = c.diag_red, bold = true })
   set("FoldColumn", { fg = c.comment, bg = gutter_bg })
-  set("Folded", { fg = c.comment, bg = c.alt_bg })
-  set("IncSearch", { fg = c.bg, bg = c.alt })
+  set("Folded", { fg = c.comment, bg = cursorline })
+  set("IncSearch", { fg = c.fg, bg = c.search })
   set("LineNr", { fg = c.comment, bg = gutter_bg })
   set("MatchParen", { fg = c.fg, bg = c.visual, bold = true })
   set("ModeMsg", { fg = c.fg, bold = true })
   set("MoreMsg", { fg = c.type })
   set("NonText", { fg = c.comment })
-  set("Pmenu", { fg = c.fg, bg = c.alt_bg })
-  set("PmenuSel", { fg = c.bg, bg = c.alt })
-  set("PmenuSbar", { bg = c.visual })
-  set("PmenuThumb", { bg = c.comment })
+  set("Pmenu", { fg = c.fg, bg = none })
+  set("PmenuSel", { fg = c.fg, bg = c.search })
+  set("PmenuSbar", { bg = none })
+  set("PmenuThumb", { bg = c.search })
   set("Question", { fg = c.type })
   set("QuickFixLine", { bg = c.visual, bold = true })
-  set("Search", { fg = c.bg, bg = c.number })
+  set("Search", { fg = c.fg, bg = c.search })
   set("SignColumn", { fg = c.comment, bg = gutter_bg })
   set("SpecialKey", { fg = c.comment })
   set("SpellBad", { sp = c.diag_red, undercurl = true })
   set("SpellCap", { sp = c.diag_blue, undercurl = true })
   set("SpellLocal", { sp = c.diag_yellow, undercurl = true })
   set("SpellRare", { sp = c.diag_green, undercurl = true })
-  set("StatusLine", { fg = c.fg, bg = "NONE" })
-  set("StatusLineNC", { fg = c.comment, bg = "NONE" })
-  set("Substitute", { fg = c.bg, bg = c.diag_yellow })
-  set("TabLine", { fg = c.comment, bg = "NONE" })
-  set("TabLineFill", { fg = c.comment, bg = "NONE" })
-  set("TabLineSel", { fg = c.fg, bg = "NONE", bold = true })
+  set("StatusLine", { fg = c.fg, bg = none })
+  set("StatusLineNC", { fg = c.comment, bg = none })
+  set("Substitute", { fg = c.fg, bg = c.search })
+  set("TabLine", { fg = c.comment, bg = none })
+  set("TabLineFill", { fg = c.comment, bg = none })
+  set("TabLineSel", { fg = c.fg, bg = none, bold = true })
   set("Title", { fg = c.keyword, bold = true })
-  set("VertSplit", { fg = c.alt_bg })
+  set("VertSplit", { fg = c.alt_bg, bg = none })
   set("Visual", { bg = c.visual })
   set("WarningMsg", { fg = c.diag_yellow, bold = true })
   set("Whitespace", { fg = c.comment })
   set("WinBar", { fg = c.fg, bg = bg })
   set("WinBarNC", { fg = c.comment, bg = bg })
-  set("WinSeparator", { fg = c.alt_bg })
-  set("WildMenu", { fg = c.bg, bg = c.alt })
+  set("WinSeparator", { fg = c.alt_bg, bg = none })
+  set("WildMenu", { fg = c.fg, bg = c.search })
 
   set("Boolean", { fg = c.number })
   set("Character", { fg = c.string })
   set("Comment", { fg = c.comment, italic = options.italic_comments })
   set("Conditional", { fg = c.keyword })
   set("Constant", { fg = c.constant })
-  set("Define", { fg = c.keyword })
+  set("Define", { fg = c.alt })
   set("Delimiter", { fg = c.operator })
   set("Error", { fg = c.diag_red })
   set("Exception", { fg = c.keyword })
   set("Float", { fg = c.number })
   set("Function", { fg = c.func })
   set("Identifier", { fg = c.property })
-  set("Include", { fg = c.keyword })
+  set("Include", { fg = c.alt })
   set("Keyword", { fg = c.keyword })
   set("Label", { fg = c.keyword })
-  set("Macro", { fg = c.keyword })
+  set("Macro", { fg = c.alt })
   set("Number", { fg = c.number })
   set("Operator", { fg = c.operator })
-  set("PreCondit", { fg = c.keyword })
-  set("PreProc", { fg = c.keyword })
+  set("PreCondit", { fg = c.alt })
+  set("PreProc", { fg = c.alt })
   set("Repeat", { fg = c.keyword })
   set("Special", { fg = c.alt })
   set("SpecialChar", { fg = c.alt })
@@ -190,32 +182,32 @@ local function apply_highlights(c)
   set("String", { fg = c.string })
   set("Structure", { fg = c.type })
   set("Tag", { fg = c.alt })
-  set("Todo", { fg = c.bg, bg = c.keyword, bold = true })
+  set("Todo", { fg = palette.bg, bg = c.keyword, bold = true })
   set("Type", { fg = c.type })
   set("Typedef", { fg = c.type })
-  set("Underlined", { fg = c.alt, underline = true })
+  set("Underlined", { fg = c.func, underline = true })
 
   set("DiagnosticError", { fg = c.diag_red })
   set("DiagnosticWarn", { fg = c.diag_yellow })
   set("DiagnosticInfo", { fg = c.diag_blue })
-  set("DiagnosticHint", { fg = c.diag_green })
+  set("DiagnosticHint", { fg = c.type })
   set("DiagnosticOk", { fg = c.diag_green })
   set("DiagnosticUnderlineError", { sp = c.diag_red, undercurl = true })
   set("DiagnosticUnderlineWarn", { sp = c.diag_yellow, undercurl = true })
   set("DiagnosticUnderlineInfo", { sp = c.diag_blue, undercurl = true })
-  set("DiagnosticUnderlineHint", { sp = c.diag_green, undercurl = true })
-  set("DiagnosticVirtualTextError", { fg = c.diag_red, bg = c.alt_bg })
-  set("DiagnosticVirtualTextWarn", { fg = c.diag_yellow, bg = c.alt_bg })
-  set("DiagnosticVirtualTextInfo", { fg = c.diag_blue, bg = c.alt_bg })
-  set("DiagnosticVirtualTextHint", { fg = c.diag_green, bg = c.alt_bg })
+  set("DiagnosticUnderlineHint", { sp = c.type, undercurl = true })
+  set("DiagnosticVirtualTextError", { fg = c.diag_red, bg = none })
+  set("DiagnosticVirtualTextWarn", { fg = c.diag_yellow, bg = none })
+  set("DiagnosticVirtualTextInfo", { fg = c.diag_blue, bg = none })
+  set("DiagnosticVirtualTextHint", { fg = c.type, bg = none })
 
-  set("DiffAdd", { fg = c.diag_green, bg = c.alt_bg })
-  set("DiffChange", { fg = c.diag_blue, bg = c.alt_bg })
-  set("DiffDelete", { fg = c.diag_red, bg = c.alt_bg })
+  set("DiffAdd", { fg = "#76946A", bg = none })
+  set("DiffChange", { fg = "#DCA561", bg = none })
+  set("DiffDelete", { fg = "#C34043", bg = none })
   set("DiffText", { fg = c.diag_yellow, bg = c.visual })
-  set("Added", { fg = c.diag_green })
-  set("Changed", { fg = c.diag_blue })
-  set("Removed", { fg = c.diag_red })
+  set("Added", { fg = "#76946A" })
+  set("Changed", { fg = "#DCA561" })
+  set("Removed", { fg = "#C34043" })
 
   link("@boolean", "Boolean")
   link("@character", "Character")
@@ -279,29 +271,29 @@ local function apply_highlights(c)
   link("@lsp.type.type", "Type")
   link("@lsp.type.variable", "Identifier")
 
-  set("GitSignsAdd", { fg = c.diag_green, bg = gutter_bg })
-  set("GitSignsChange", { fg = c.diag_blue, bg = gutter_bg })
-  set("GitSignsDelete", { fg = c.diag_red, bg = gutter_bg })
-  set("MiniStatuslineModeNormal", { fg = c.bg, bg = c.alt, bold = true })
-  set("MiniStatuslineModeInsert", { fg = c.bg, bg = c.type, bold = true })
-  set("MiniStatuslineModeVisual", { fg = c.bg, bg = c.keyword, bold = true })
-  set("MiniStatuslineModeReplace", { fg = c.bg, bg = c.diag_red, bold = true })
-  set("MiniStatuslineModeCommand", { fg = c.bg, bg = c.number, bold = true })
-  set("TelescopeBorder", { fg = c.comment, bg = "NONE" })
-  set("TelescopeNormal", { fg = c.fg, bg = "NONE" })
+  set("GitSignsAdd", { fg = "#76946A", bg = gutter_bg })
+  set("GitSignsChange", { fg = "#DCA561", bg = gutter_bg })
+  set("GitSignsDelete", { fg = "#C34043", bg = gutter_bg })
+  set("MiniStatuslineModeNormal", { fg = palette.bg, bg = c.alt, bold = true })
+  set("MiniStatuslineModeInsert", { fg = palette.bg, bg = c.type, bold = true })
+  set("MiniStatuslineModeVisual", { fg = palette.bg, bg = c.keyword, bold = true })
+  set("MiniStatuslineModeReplace", { fg = palette.bg, bg = c.diag_red, bold = true })
+  set("MiniStatuslineModeCommand", { fg = palette.bg, bg = c.operator, bold = true })
+  set("TelescopeBorder", { fg = c.comment, bg = none })
+  set("TelescopeNormal", { fg = c.fg, bg = none })
   set("TelescopeMatching", { fg = c.alt, bold = true })
   set("TelescopeSelection", { fg = c.fg, bg = c.visual })
-  set("TelescopeTitle", { fg = c.alt, bg = "NONE", bold = true })
-  set("TelescopePromptNormal", { fg = c.fg, bg = "NONE" })
-  set("TelescopePromptBorder", { fg = c.alt_bg, bg = "NONE" })
-  set("TelescopePromptTitle", { fg = c.alt, bg = "NONE", bold = true })
-  set("TelescopePromptPrefix", { fg = c.alt, bg = "NONE" })
-  set("TelescopeResultsNormal", { fg = c.fg, bg = "NONE" })
-  set("TelescopeResultsBorder", { fg = c.bg, bg = "NONE" })
-  set("TelescopeResultsTitle", { fg = c.alt, bg = "NONE", bold = true })
-  set("TelescopePreviewNormal", { fg = c.fg, bg = "NONE" })
-  set("TelescopePreviewBorder", { fg = "NONE", bg = "NONE" })
-  set("TelescopePreviewTitle", { fg = c.alt, bg = "NONE", bold = true })
+  set("TelescopeTitle", { fg = c.alt, bg = none, bold = true })
+  set("TelescopePromptNormal", { fg = c.fg, bg = none })
+  set("TelescopePromptBorder", { fg = c.alt_bg, bg = none })
+  set("TelescopePromptTitle", { fg = c.alt, bg = none, bold = true })
+  set("TelescopePromptPrefix", { fg = c.alt, bg = none })
+  set("TelescopeResultsNormal", { fg = c.fg, bg = none })
+  set("TelescopeResultsBorder", { fg = c.bg, bg = none })
+  set("TelescopeResultsTitle", { fg = c.alt, bg = none, bold = true })
+  set("TelescopePreviewNormal", { fg = c.fg, bg = none })
+  set("TelescopePreviewBorder", { fg = none, bg = none })
+  set("TelescopePreviewTitle", { fg = c.alt, bg = none, bold = true })
   set("WhichKey", { fg = c.keyword })
   set("WhichKeyDesc", { fg = c.fg })
   set("WhichKeyGroup", { fg = c.type })
