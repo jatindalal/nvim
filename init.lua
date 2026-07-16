@@ -59,6 +59,30 @@ vim.keymap.set({ "n" }, "<A-j>", ":horizontal resize -5<Return>")
 vim.keymap.set({ "n", "v" }, "<leader>y", '"+y')
 vim.keymap.set({ "n", "v" }, "<leader>p", '"+p')
 vim.keymap.set({ "n" }, "x", '"_x', opts)
+vim.keymap.set("n", "<leader>lg", function()
+	vim.cmd.tabnew()
+	vim.cmd("terminal lazygit")
+	local buf = vim.api.nvim_get_current_buf()
+	vim.api.nvim_create_autocmd("TermClose", {
+		buffer = buf,
+		once = true,
+		callback = function()
+			vim.schedule(function()
+				if vim.api.nvim_buf_is_valid(buf) then
+					vim.api.nvim_buf_delete(buf, { force = true })
+				end
+			end)
+		end,
+	})
+	vim.cmd.startinsert()
+end, { desc = "Open lazygit" })
+vim.keymap.set("t", "<Esc>", function()
+	local name = vim.api.nvim_buf_get_name(0)
+	if name:match("lazygit") then
+		return "<Esc>"
+	end
+	return "<C-\\><C-N>"
+end, { expr = true })
 
 -- autocmds
 vim.api.nvim_create_autocmd("TextYankPost", {
