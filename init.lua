@@ -802,14 +802,10 @@ local ai = {
 			instructions_file = "instructions.md",
 			provider = "codex",
 			hints = { enabled = false },
-			providers = {
-				codex = {
-					__inherited_from = "openai",
-					endpoint = "https://api.openai.com/v1",
-					api_key_name = "OPENAI_API_KEY",
-					model = "gpt-5.5",
-				},
-			}
+			windows = {
+				position = "right",
+				width = 45,
+			},
 		},
 		dependencies = {
 			"nvim-lua/plenary.nvim",
