@@ -27,7 +27,7 @@ vim.opt.listchars = {
 	precedes = "❮",
 	nbsp = "␣",
 }
--- vim.o.cmdheight = 0
+vim.o.cmdheight = 0
 
 -- keymaps
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
@@ -118,6 +118,7 @@ enabled_plugins = {
 	"formatter",
 	"lsp",
 	"debugger",
+	"ai",
 }
 
 local colorscheme = {
@@ -791,6 +792,33 @@ local debugger = {
 		},
 	},
 }
+
+local ai = {
+	{
+		"yetone/avante.nvim",
+		event = "VeryLazy",
+		version = false,
+		opts = {
+			instructions_file = "instructions.md",
+			provider = "codex",
+			hints = { enabled = false },
+			providers = {
+				codex = {
+					__inherited_from = "openai",
+					endpoint = "https://api.openai.com/v1",
+					api_key_name = "OPENAI_API_KEY",
+					model = "gpt-5.5",
+				},
+			}
+		},
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			"nvim-telescope/telescope.nvim",
+		},
+	},
+}
+
 local plugin_map = {
 	["colorscheme"] = colorscheme,
 	["editor"] = editor,
@@ -799,6 +827,7 @@ local plugin_map = {
 	["formatter"] = formatter,
 	["lsp"] = lsp,
 	["debugger"] = debugger,
+	["ai"] = ai,
 }
 local active_plugins = {}
 for _, plugin in ipairs(enabled_plugins) do
