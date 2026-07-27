@@ -801,10 +801,16 @@ local ai = {
 		opts = {
 			instructions_file = "instructions.md",
 			provider = "codex",
-			hints = { enabled = false },
+			selection = {
+				hint_display = "none",
+			},
+			selector = {
+				provider = "telescope",
+			},
 			windows = {
 				position = "right",
 				width = 45,
+				sidebar_header = { enabled = false },
 			},
 		},
 		dependencies = {
