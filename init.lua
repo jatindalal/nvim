@@ -166,6 +166,7 @@ local colorscheme = {
 					TelescopePreviewNormal = { bg = "NONE" },
 					TelescopePreviewBorder = { bg = "NONE" },
 					TelescopeTitle = { fg = theme.ui.special, bg = "NONE", bold = true },
+					TabLineFill = { bg = "None"}
 				}
 			end,
 			theme = "wave",
