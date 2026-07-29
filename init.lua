@@ -28,6 +28,10 @@ vim.opt.listchars = {
 	nbsp = "␣",
 }
 vim.o.cmdheight = 0
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "v:lua.vim.lsp.foldexpr()"
+vim.o.foldlevel = 99
+vim.o.foldlevelstart = 99
 
 -- keymaps
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
