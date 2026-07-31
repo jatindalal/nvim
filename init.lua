@@ -28,9 +28,9 @@ vim.opt.listchars = {
 	nbsp = "␣",
 }
 vim.o.cmdheight = 0
-vim.o.foldmethod = "expr"
-vim.o.foldexpr = "v:lua.vim.lsp.foldexpr()"
-vim.o.foldlevel = 99
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldlevel = 99
 vim.o.foldlevelstart = 99
 
 -- keymaps
@@ -103,6 +103,183 @@ vim.api.nvim_create_autocmd("VimResized", {
 	end,
 })
 
+local colorscheme = {}
+colorscheme.palette = {
+	bg = "#0a0806", -- base background (near-black)
+	bg_dim = "#050403", -- statusline/inactive
+	bg_float = "#120e0a", -- popups, floats
+	bg_visual = "#2e2318", -- visual selection
+	bg_line = "#161109", -- cursorline
+
+	fg = "#e6d9c3", -- primary text
+	fg_dim = "#a8967d", -- secondary text (params, punctuation)
+	comment = "#7a6a58", -- comments, line numbers
+
+	border = "#3d3226",
+
+	brown = "#b0703f", -- keywords, control flow (was purple)
+	brown_dim = "#8a5a35",
+	brown_bright = "#c68752",
+	green = "#8fa668", -- functions, identifiers (was purple accent 2)
+	green_dim = "#748a52",
+	green_bright = "#a3bd7e",
+	tan = "#d4a655", -- constants, numbers
+	tan_bright = "#e0b76a",
+	clay = "#c4634a", -- errors, deletions
+	clay_bright = "#d97a61",
+	amber = "#d0904a", -- warnings, types
+	teal = "#6b9a8a", -- strings
+	teal_bright = "#82b5a5",
+	dust_blue = "#469ca0", -- info, links
+	dust_blue_bright = "#5cb3b7",
+
+	red = "#c4634a",
+	green2 = "#7c9a5c", -- git add
+	yellow = "#d4a655",
+	blue = "#469ca0",
+}
+
+function colorscheme.setup()
+	local p = colorscheme.palette
+	vim.cmd("highlight clear")
+	if vim.fn.exists("syntax_on") then
+		vim.cmd("syntax reset")
+	end
+	vim.o.background = "dark"
+	vim.g.colors_name = "warmdesert"
+
+	local hl = function(group, opts)
+		vim.api.nvim_set_hl(0, group, opts)
+	end
+
+	-- Editor UI
+	hl("Normal", { fg = p.fg, bg = p.bg })
+	hl("NormalFloat", { fg = p.fg, bg = p.bg_float })
+	hl("FloatBorder", { fg = p.border, bg = p.bg_float })
+	hl("Cursor", { fg = p.bg, bg = p.fg })
+	hl("CursorLine", { bg = p.bg_line })
+	hl("CursorLineNr", { fg = p.tan, bold = true })
+	hl("LineNr", { fg = p.comment })
+	hl("SignColumn", { bg = p.bg })
+	hl("ColorColumn", { bg = p.bg_line })
+	hl("VertSplit", { fg = p.border })
+	hl("WinSeparator", { fg = p.border })
+	hl("Visual", { bg = p.bg_visual })
+	hl("VisualNOS", { bg = p.bg_visual })
+	hl("Search", { fg = p.bg, bg = p.tan })
+	hl("IncSearch", { fg = p.bg, bg = p.clay })
+	hl("Pmenu", { fg = p.fg, bg = p.bg_float })
+	hl("PmenuSel", { fg = p.bg, bg = p.brown })
+	hl("PmenuSbar", { bg = p.bg_float })
+	hl("PmenuThumb", { bg = p.brown_dim })
+	hl("StatusLine", { fg = p.fg, bg = p.bg_dim })
+	hl("StatusLineNC", { fg = p.comment, bg = p.bg_dim })
+	hl("TabLine", { fg = p.comment, bg = p.bg_dim })
+	hl("TabLineSel", { fg = p.fg, bg = p.bg })
+	hl("Directory", { fg = p.green })
+	hl("Title", { fg = p.brown, bold = true })
+	hl("NonText", { fg = p.border })
+	hl("Whitespace", { fg = p.border })
+	hl("MatchParen", { fg = p.tan, bold = true, underline = true })
+	hl("WinBar", { fg = p.fg_dim, bg = p.bg })
+
+	-- Syntax
+	hl("Comment", { fg = p.comment, italic = true })
+	hl("Constant", { fg = p.tan })
+	hl("String", { fg = p.green })
+	hl("Character", { fg = p.green })
+	hl("Number", { fg = p.tan })
+	hl("Boolean", { fg = p.tan, bold = true })
+	hl("Identifier", { fg = p.fg })
+	hl("Function", { fg = p.dust_blue, bold = true })
+	hl("Statement", { fg = p.brown, bold = true })
+	hl("Conditional", { fg = p.brown, italic = true })
+	hl("Repeat", { fg = p.brown, italic = true })
+	hl("Keyword", { fg = p.brown, italic = true })
+	hl("Operator", { fg = p.teal })
+	hl("PreProc", { fg = p.teal })
+	hl("Type", { fg = p.amber })
+	hl("Structure", { fg = p.amber })
+	hl("Special", { fg = p.clay })
+	hl("Underlined", { fg = p.dust_blue, underline = true })
+	hl("Error", { fg = p.clay, bold = true })
+	hl("Todo", { fg = p.bg, bg = p.tan, bold = true })
+	hl("Delimiter", { fg = p.fg_dim })
+
+	-- Treesitter (tokyonight-style role separation, warm palette)
+	hl("@variable", { fg = p.fg })
+	hl("@variable.builtin", { fg = p.clay, italic = true })
+	hl("@variable.parameter", { fg = p.teal, italic = true })
+	hl("@constant", { link = "Constant" })
+	hl("@constant.builtin", { fg = p.tan, bold = true })
+	hl("@string", { link = "String" })
+	hl("@string.escape", { fg = p.teal, bold = true })
+	hl("@function", { link = "Function" })
+	hl("@function.builtin", { fg = p.dust_blue, italic = true })
+	hl("@method", { link = "Function" })
+	hl("@keyword", { link = "Keyword" })
+	hl("@keyword.function", { fg = p.brown })
+	hl("@keyword.return", { fg = p.brown, italic = true })
+	hl("@keyword.operator", { fg = p.teal })
+	hl("@type", { link = "Type" })
+	hl("@type.builtin", { fg = p.amber, italic = true })
+	hl("@property", { fg = p.teal })
+	hl("@field", { fg = p.teal })
+	hl("@tag", { fg = p.clay })
+	hl("@tag.attribute", { fg = p.amber, italic = true })
+	hl("@punctuation.bracket", { fg = p.fg_dim })
+	hl("@punctuation.delimiter", { fg = p.fg_dim })
+	hl("@comment", { link = "Comment" })
+	hl("@operator", { link = "Operator" })
+	hl("@boolean", { link = "Boolean" })
+	hl("@number", { fg = p.tan })
+
+	-- LSP / diagnostics
+	hl("DiagnosticError", { fg = p.clay })
+	hl("DiagnosticWarn", { fg = p.amber })
+	hl("DiagnosticInfo", { fg = p.dust_blue })
+	hl("DiagnosticHint", { fg = p.green })
+	hl("DiagnosticUnderlineError", { undercurl = true, sp = p.clay })
+	hl("DiagnosticUnderlineWarn", { undercurl = true, sp = p.amber })
+	hl("DiagnosticUnderlineInfo", { undercurl = true, sp = p.dust_blue })
+	hl("DiagnosticUnderlineHint", { undercurl = true, sp = p.green })
+	hl("LspReferenceText", { bg = p.bg_line })
+	hl("LspReferenceRead", { bg = p.bg_line })
+	hl("LspReferenceWrite", { bg = p.bg_visual })
+
+	-- Git
+	hl("DiffAdd", { fg = p.green2, bg = p.bg_line })
+	hl("DiffChange", { fg = p.amber, bg = p.bg_line })
+	hl("DiffDelete", { fg = p.clay, bg = p.bg_line })
+	hl("DiffText", { fg = p.tan, bg = p.bg_visual })
+	hl("GitSignsAdd", { fg = p.green2 })
+	hl("GitSignsChange", { fg = p.amber })
+	hl("GitSignsDelete", { fg = p.clay })
+
+	-- Terminal colors (:terminal, fzf, lazygit, etc.)
+	vim.g.terminal_color_0 = p.bg_dim
+	vim.g.terminal_color_1 = p.clay
+	vim.g.terminal_color_2 = p.green
+	vim.g.terminal_color_3 = p.tan
+	vim.g.terminal_color_4 = p.dust_blue
+	vim.g.terminal_color_5 = p.brown
+	vim.g.terminal_color_6 = p.teal
+	vim.g.terminal_color_7 = p.fg_dim
+	vim.g.terminal_color_8 = p.comment
+	vim.g.terminal_color_9 = p.clay_bright
+	vim.g.terminal_color_10 = p.green_bright
+	vim.g.terminal_color_11 = p.tan_bright
+	vim.g.terminal_color_12 = p.dust_blue_bright
+	vim.g.terminal_color_13 = p.brown_bright
+	vim.g.terminal_color_14 = p.teal_bright
+	vim.g.terminal_color_15 = p.fg
+
+	-- for plugins that read a background/foreground pair off terminal colors
+	vim.g.terminal_color_background = p.bg
+	vim.g.terminal_color_foreground = p.fg
+end
+colorscheme.setup()
+
 -- plugins
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -115,7 +292,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 enabled_plugins = {
-	"colorscheme",
 	"editor",
 	"telescope",
 	"neotree",
@@ -123,64 +299,12 @@ enabled_plugins = {
 	"lsp",
 	"debugger",
 	"ai",
+	"treesitter",
 }
 
-local colorscheme = {
-	"rebelot/kanagawa.nvim",
-	priority = 1000,
-	lazy = false,
-	config = function()
-		require("kanagawa").setup({
-			compile = false, -- enable compiling the colorscheme
-			undercurl = true, -- enable undercurls
-			commentStyle = { italic = true },
-			functionStyle = {},
-			keywordStyle = { italic = true },
-			statementStyle = { bold = true },
-			typeStyle = {},
-			transparent = true, -- do not set background color
-			dimInactive = false, -- dim inactive window `:h hl-NormalNC`
-			terminalColors = true, -- define vim.g.terminal_color_{0,17}
-			colors = {
-				palette = {},
-				theme = {
-					wave = {},
-					lotus = {},
-					dragon = {},
-					all = {
-						ui = {
-							bg_gutter = "none",
-						},
-					},
-				},
-			},
-			overrides = function(colors) -- add/modify highlights
-				local theme = colors.theme
-				return {
-					TelescopeNormal = { bg = "NONE" },
-					TelescopeBorder = { bg = "NONE" },
-					TelescopePromptNormal = { bg = "NONE" },
-					TelescopePromptBorder = { bg = "NONE" },
-					TelescopeResultsNormal = { bg = "NONE" },
-					TelescopeResultsBorder = { bg = "NONE" },
-					TelescopePreviewNormal = { bg = "NONE" },
-					TelescopePreviewBorder = { bg = "NONE" },
-					TelescopeTitle = { fg = theme.ui.special, bg = "NONE", bold = true },
-					TabLineFill = { bg = "None"}
-				}
-			end,
-			theme = "wave",
-			background = {
-				dark = "wave",
-				light = "lotus",
-			},
-		})
+local plugins = {}
 
-		vim.cmd("colorscheme kanagawa")
-	end,
-}
-
-local editor = {
+plugins.editor = {
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
@@ -192,7 +316,7 @@ local editor = {
 	},
 }
 
-local telescope = {
+plugins.telescope = {
 	"nvim-telescope/telescope.nvim",
 	tag = "v0.2.0",
 	dependencies = {
@@ -225,7 +349,7 @@ local telescope = {
 	end,
 }
 
-local neotree = {
+plugins.neotree = {
 	"nvim-neo-tree/neo-tree.nvim",
 	branch = "v3.x",
 	dependencies = {
@@ -298,7 +422,10 @@ local neotree = {
 				},
 			},
 			window = {
-				position = "current",
+				position = "right",
+				width = function()
+					return math.floor(vim.o.columns * 0.4)
+				end,
 			},
 		})
 
@@ -313,7 +440,7 @@ local neotree = {
 	end,
 }
 
-local formatter = {
+plugins.formatter = {
 	{
 		"mason-org/mason.nvim",
 		opts = {},
@@ -371,7 +498,7 @@ local formatter = {
 	},
 }
 
-local lsp = {
+plugins.lsp = {
 	"neovim/nvim-lspconfig",
 	dependencies = {
 		{
@@ -408,9 +535,9 @@ local lsp = {
 				end, "Signature Help")
 
 				local client = vim.lsp.get_client_by_id(event.data.client_id)
-				if client then
-					client.server_capabilities.semanticTokensProvider = nil
-				end
+				-- if client then
+				-- 	client.server_capabilities.semanticTokensProvider = nil
+				-- end
 				if client and client:supports_method("textDocument/inlayHint", event.buf) then
 					map("<leader>th", function()
 						vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
@@ -496,7 +623,7 @@ local lsp = {
 	end,
 }
 
-local debugger = {
+plugins.debugger = {
 	{
 		"mfussenegger/nvim-dap",
 		dependencies = {
@@ -798,7 +925,7 @@ local debugger = {
 	},
 }
 
-local ai = {
+plugins.ai = {
 	{
 		"yetone/avante.nvim",
 		event = "VeryLazy",
@@ -826,43 +953,56 @@ local ai = {
 	},
 }
 
-local plugin_map = {
-	["colorscheme"] = colorscheme,
-	["editor"] = editor,
-	["telescope"] = telescope,
-	["neotree"] = neotree,
-	["formatter"] = formatter,
-	["lsp"] = lsp,
-	["debugger"] = debugger,
-	["ai"] = ai,
-}
-local active_plugins = {}
-for _, plugin in ipairs(enabled_plugins) do
-	table.insert(active_plugins, plugin_map[plugin])
-end
-
-require("lazy").setup(active_plugins, {
-	ui = {
-		icons = {
-			cmd = "▸ ",
-			config = "◆ ",
-			debug = "◉ ",
-			event = "⚑ ",
-			favorite = "★ ",
-			ft = "◈ ",
-			init = "▹ ",
-			import = "← ",
-			keys = "⌨ ",
-			lazy = "⏻ ",
-			loaded = "●",
-			not_loaded = "○",
-			plugin = "▣ ",
-			runtime = "▤ ",
-			require = "→ ",
-			source = "§ ",
-			start = "▶ ",
-			task = "▾ ",
-			list = { "●", "▸", "★", "○" },
+plugins.treesitter = {
+	"nvim-treesitter/nvim-treesitter",
+	branch = "master",
+	build = ":TSUpdate",
+	main = "nvim-treesitter.configs",
+	opts = {
+		ensure_installed = {
+			"lua",
+			"python",
+			"javascript",
+			"typescript",
+			"vimdoc",
+			"vim",
+			"regex",
+			"terraform",
+			"sql",
+			"dockerfile",
+			"toml",
+			"json",
+			"java",
+			"groovy",
+			"go",
+			"gitignore",
+			"graphql",
+			"yaml",
+			"make",
+			"cmake",
+			"markdown",
+			"markdown_inline",
+			"bash",
+			"tsx",
+			"css",
+			"html",
+			"cpp",
+		},
+		auto_install = true,
+		highlight = {
+			enable = true,
+			additional_vim_regex_highlighting = { "ruby" },
+		},
+		indent = { enable = true, disable = { "ruby" } },
+		fold = {
+			enable = true,
 		},
 	},
-})
+}
+
+local active_plugins = {}
+for _, plugin in ipairs(enabled_plugins) do
+	table.insert(active_plugins, plugins[plugin])
+end
+
+require("lazy").setup(active_plugins)
