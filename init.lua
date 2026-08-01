@@ -105,7 +105,7 @@ vim.api.nvim_create_autocmd("VimResized", {
 
 local colorscheme = {}
 colorscheme.palette = {
-	bg = "#0a0806", -- base background (near-black)
+	bg = "#0a0a0a", -- base background (near-black)
 	bg_dim = "#050403", -- statusline/inactive
 	bg_float = "#120e0a", -- popups, floats
 	bg_visual = "#2e2318", -- visual selection
@@ -184,14 +184,14 @@ function colorscheme.setup()
 	hl("WinBar", { fg = p.fg_dim, bg = p.bg })
 
 	-- Syntax
-	hl("Comment", { fg = p.comment, italic = true })
+	hl("Comment", { fg = p.comment })
 	hl("Constant", { fg = p.tan })
 	hl("String", { fg = p.green })
 	hl("Character", { fg = p.green })
 	hl("Number", { fg = p.tan })
 	hl("Boolean", { fg = p.tan, bold = true })
 	hl("Identifier", { fg = p.fg })
-	hl("Function", { fg = p.dust_blue, bold = true })
+	hl("Function", { fg = p.red, bold = true })
 	hl("Statement", { fg = p.brown, bold = true })
 	hl("Conditional", { fg = p.brown, italic = true })
 	hl("Repeat", { fg = p.brown, italic = true })
@@ -206,7 +206,6 @@ function colorscheme.setup()
 	hl("Todo", { fg = p.bg, bg = p.tan, bold = true })
 	hl("Delimiter", { fg = p.fg_dim })
 
-	-- Treesitter (tokyonight-style role separation, warm palette)
 	hl("@variable", { fg = p.fg })
 	hl("@variable.builtin", { fg = p.clay, italic = true })
 	hl("@variable.parameter", { fg = p.teal, italic = true })
