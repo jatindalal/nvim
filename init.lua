@@ -28,10 +28,11 @@ vim.opt.listchars = {
 	nbsp = "␣",
 }
 vim.o.cmdheight = 0
-vim.opt.foldmethod = "expr"
-vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
-vim.opt.foldlevel = 99
+vim.o.foldmethod = "expr"
+vim.o.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
+vim.opt.fillchars:append({ eob = " " })
 
 -- keymaps
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
@@ -174,8 +175,9 @@ function colorscheme.setup()
 	hl("PmenuThumb", { bg = p.brown_dim })
 	hl("StatusLine", { fg = p.fg, bg = p.bg_dim })
 	hl("StatusLineNC", { fg = p.comment, bg = p.bg_dim })
-	hl("TabLine", { fg = p.comment, bg = p.bg_dim })
-	hl("TabLineSel", { fg = p.fg, bg = p.bg })
+	hl("TabLine", { fg = p.brown_bright, bg = p.bg_dim })
+	hl("TabLineSel", { fg = p.bg, bg = p.brown_bright, bold = true })
+	hl("TabLineFill", { bg = p.bg })
 	hl("Directory", { fg = p.green })
 	hl("Title", { fg = p.brown, bold = true })
 	hl("NonText", { fg = p.border })
@@ -277,7 +279,43 @@ function colorscheme.setup()
 	vim.g.terminal_color_background = p.bg
 	vim.g.terminal_color_foreground = p.fg
 end
+_G.palette = colorscheme.palette
 colorscheme.setup()
+
+function _G.TabLine()
+	local s = ""
+
+	for i = 1, vim.fn.tabpagenr("$") do
+		local winnr = vim.fn.tabpagewinnr(i)
+		local bufnr = vim.fn.tabpagebuflist(i)[winnr]
+
+		local name = vim.fn.bufname(bufnr)
+		if name == "" then
+			name = "[No Name]"
+		else
+			name = vim.fn.fnamemodify(name, ":t") -- filename only
+		end
+
+		local modified = vim.bo[bufnr].modified and " ●" or ""
+
+		if i == vim.fn.tabpagenr() then
+			s = s .. "%#TabLineSel#"
+		else
+			s = s .. "%#TabLine#"
+		end
+
+		-- Mouse click target
+		s = s .. "%" .. i .. "T"
+
+		-- Label
+		s = s .. " " .. i .. " " .. name .. modified .. " "
+	end
+
+	s = s .. "%#TabLineFill#%T"
+	return s
+end
+vim.o.tabline = "%!v:lua.TabLine()"
+vim.o.showtabline = 2
 
 -- plugins
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -312,6 +350,93 @@ plugins.editor = {
 	},
 	{
 		"tpope/vim-fugitive",
+	},
+	{
+		"nvim-lualine/lualine.nvim",
+		config = function()
+			local theme = require("lualine.themes.auto")
+
+			require("lualine").setup({
+				options = {
+					icons_enabled = true,
+					theme = "auto",
+					component_separators = { left = "", right = "" },
+					section_separators = { left = " ", right = " " },
+					disabled_filetypes = {
+						statusline = {},
+						winbar = {},
+					},
+					ignore_focus = {},
+					always_divide_middle = true,
+					always_show_tabline = true,
+					globalstatus = false,
+					refresh = {
+						statusline = 1000,
+						tabline = 1000,
+						winbar = 1000,
+						refresh_time = 16, -- ~60fps
+						events = {
+							"WinEnter",
+							"BufEnter",
+							"BufWritePost",
+							"SessionLoadPost",
+							"FileChangedShellPost",
+							"VimResized",
+							"Filetype",
+							"CursorMoved",
+							"CursorMovedI",
+							"ModeChanged",
+						},
+					},
+				},
+				sections = {
+					lualine_a = {
+						{
+							"mode",
+							fmt = function(str)
+								return str:sub(1, 1)
+							end,
+						},
+					},
+					lualine_b = { "branch", "diff" },
+					lualine_c = {},
+					lualine_x = { "filename", "filetype" },
+					lualine_y = { "progress" },
+					lualine_z = { "location" },
+				},
+				inactive_sections = {
+					lualine_a = {},
+					lualine_b = {},
+					lualine_c = { "filename" },
+					lualine_x = { "location" },
+					lualine_y = {},
+					lualine_z = {},
+				},
+				-- tabline = {
+				-- 	lualine_a = {
+				-- 		{
+				-- 			"tabs",
+				-- 			mode = 2,
+				-- 			max_length = vim.o.columns,
+				-- 			show_modified_status = true,
+				-- 			symbols = {
+				-- 				modified = " ●",
+				-- 			},
+				-- 			fmt = function(name, context)
+				-- 				return name
+				-- 			end,
+				-- 			tabs_color = {
+				-- 				active = { bg = _G.palette.brown_bright, fg = _G.palette.bg_dim, gui = "bold" },
+				-- 				inactive = { bg = _G.palette.bg, fg = _G.palette.fg_dim },
+				-- 			},
+				-- 		},
+				-- 	},
+				-- },
+				winbar = {},
+				inactive_winbar = {},
+				extensions = {},
+			})
+		end,
 	},
 }
 
