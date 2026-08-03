@@ -20,6 +20,7 @@ vim.o.synmaxcol = 240
 vim.o.updatetime = 200
 vim.o.redrawtime = 10000
 vim.o.maxmempattern = 20000
+vim.o.termguicolors = true
 vim.opt.listchars = {
 	tab = "▸ ",
 	trail = "·",
@@ -142,10 +143,10 @@ colorscheme.palette = {
 
 function colorscheme.setup()
 	local p = colorscheme.palette
-	vim.cmd("highlight clear")
-	if vim.fn.exists("syntax_on") then
-		vim.cmd("syntax reset")
-	end
+	-- vim.cmd("highlight clear")
+	-- if vim.fn.exists("syntax_on") then
+	-- 	vim.cmd("syntax reset")
+	-- end
 	vim.o.background = "dark"
 	vim.g.colors_name = "warmdesert"
 
