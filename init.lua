@@ -528,7 +528,7 @@ plugins.neotree = {
 				},
 			},
 			window = {
-				position = "right",
+				position = "current",
 				width = function()
 					return math.floor(vim.o.columns * 0.4)
 				end,
