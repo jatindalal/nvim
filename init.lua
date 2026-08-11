@@ -34,6 +34,8 @@ vim.o.foldexpr = "v:lua.vim.lsp.foldexpr()"
 vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
 vim.opt.fillchars:append({ eob = " " })
+vim.o.exrc = true
+vim.o.secure = true
 
 -- keymaps
 vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
@@ -412,26 +414,6 @@ plugins.editor = {
 					lualine_y = {},
 					lualine_z = {},
 				},
-				-- tabline = {
-				-- 	lualine_a = {
-				-- 		{
-				-- 			"tabs",
-				-- 			mode = 2,
-				-- 			max_length = vim.o.columns,
-				-- 			show_modified_status = true,
-				-- 			symbols = {
-				-- 				modified = " ●",
-				-- 			},
-				-- 			fmt = function(name, context)
-				-- 				return name
-				-- 			end,
-				-- 			tabs_color = {
-				-- 				active = { bg = _G.palette.brown_bright, fg = _G.palette.bg_dim, gui = "bold" },
-				-- 				inactive = { bg = _G.palette.bg, fg = _G.palette.fg_dim },
-				-- 			},
-				-- 		},
-				-- 	},
-				-- },
 				winbar = {},
 				inactive_winbar = {},
 				extensions = {},
