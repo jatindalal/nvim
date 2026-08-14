@@ -187,6 +187,13 @@ function colorscheme.setup()
 	hl("Whitespace", { fg = p.border })
 	hl("MatchParen", { fg = p.tan, bold = true, underline = true })
 	hl("WinBar", { fg = p.fg_dim, bg = p.bg })
+	hl("ErrorMsg",   { fg = p.red })
+	hl("WarningMsg", { fg = p.tan })
+	hl("MoreMsg",    { fg = p.green })
+	hl("Question",   { fg = p.brown_bright })
+	hl("ModeMsg",    { fg = p.fg, bold = true })
+	hl("MsgArea",    { fg = p.fg, bg = p.bg })
+	hl("MsgSeparator", { fg = p.border, bg = p.bg })
 
 	-- Syntax
 	hl("Comment", { fg = p.comment })
