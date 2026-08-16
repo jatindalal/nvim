@@ -340,12 +340,11 @@ vim.opt.rtp:prepend(lazypath)
 
 enabled_plugins = {
 	"editor",
-	"telescope",
-	"neotree",
+	"mini_pick",
+	"mini_files",
 	"formatter",
 	"lsp",
 	"debugger",
-	"ai",
 }
 
 local plugins = {}
@@ -429,126 +428,66 @@ plugins.editor = {
 	},
 }
 
-plugins.telescope = {
-	"nvim-telescope/telescope.nvim",
-	tag = "v0.2.0",
-	dependencies = {
-		"nvim-lua/plenary.nvim",
-		"nvim-telescope/telescope-ui-select.nvim",
-	},
+plugins.mini_pick = {
+	"nvim-mini/mini.pick",
+	dependencies = { "nvim-mini/mini.extra" },
 	config = function()
-		pickers = {
-			find_files = {
-				file_ignore_patterns = { "node_modules", ".git", ".venv", "build" },
-				hidden = true,
+		require("mini.pick").setup({
+			source = {
+				show = require("mini.pick").default_show,
 			},
-			live_grep = {
-				file_ignore_patterns = { "node_modules", ".git", ".venv" },
-				additional_args = function(_)
-					return { "--hidden" }
-				end,
-			},
-		}
-		pcall(require("telescope").load_extension, "fzf")
-		pcall(require("telescope").load_extension, "ui-select")
-		local builtin = require("telescope.builtin")
-		vim.keymap.set("n", ";f", builtin.find_files, { desc = "[S]earch [F]iles" })
-		vim.keymap.set("n", ";r", builtin.live_grep, { desc = "[S]earch by [G]rep" })
-		vim.keymap.set("n", ";l", builtin.current_buffer_fuzzy_find, { desc = "search in current buffer" })
-		vim.keymap.set("n", ";b", builtin.buffers, { desc = "[S]earch [B]uffers" })
-		vim.keymap.set({ "n" }, ";c", function()
-			vim.cmd("e " .. vim.fn.stdpath("config") .. "/init.lua")
-		end)
+		})
+		require("mini.extra").setup()
+		vim.ui.select = MiniPick.ui_select
+		local pick = MiniPick.builtin
+		local extra = MiniExtra.pickers
+		vim.keymap.set("n", ";f", function() pick.files({ tool = "rg" }) end)
+		vim.keymap.set("n", ";r", function() pick.grep_live() end)
+		vim.keymap.set("n", ";l", function() extra.buf_lines({ scope = "current" }) end)
+		vim.keymap.set("n", ";b", function() pick.buffers() end)
+		vim.keymap.set("n", ";c", function() vim.cmd("e " .. vim.fn.stdpath("config") .. "/init.lua") end)
 	end,
 }
 
-plugins.neotree = {
-	"nvim-neo-tree/neo-tree.nvim",
-	branch = "v3.x",
+plugins.mini_files = {
+	"nvim-mini/mini.files",
 	dependencies = {
-		"nvim-lua/plenary.nvim",
-		"MunifTanjim/nui.nvim",
+		{
+			"nvim-mini/mini.icons",
+			config = function()
+				require("mini.icons").setup({
+					style = "ascii",
+				})
+			end,
+		},
 	},
-	lazy = false, -- neo-tree will lazily load itself
 	config = function()
-		require("neo-tree").setup({
-			sources = { "filesystem" },
-			close_if_last_window = true, -- Close Neo-tree if it is the last window left in the tab
-			-- popup_border_style = "rounded",
-			enable_git_status = true,
-			enable_diagnostics = false,
-			open_files_do_not_replace_types = { "terminal", "trouble", "qf" }, -- when opening files, do not use windows containing these filetypes or buftypes
-			default_component_configs = {
-				indent = {
-					indent_marker = " ",
-					last_indent_marker = " ",
-					expander_collapsed = ">",
-					expander_expanded = "v",
-				},
-				icon = {
-					use_filtered_colors = true,
-					provider = function() end,
-					highlight = "NeoTreeFileIcon",
-					folder_closed = "▸",
-					folder_open = "▾",
-					folder_empty = "▹",
-					folder_empty_open = "▿",
-					default = "·",
-				},
-				git_status = {
-					symbols = {
-						-- Change type
-						added = "",
-						modified = "",
-						deleted = "x",
-						renamed = "R",
-						-- Status type
-						untracked = "?",
-						ignored = "i",
-						unstaged = "!",
-						staged = "*",
-						conflict = "C",
-					},
-				},
-				file_size = {
-					enabled = true,
-					width = 12, -- width of the column
-					required_width = 64, -- min width of window required to show this column
-				},
-				type = {
-					enabled = true,
-					width = 10, -- width of the column
-					required_width = 122, -- min width of window required to show this column
-				},
-				last_modified = {
-					enabled = true,
-					width = 20, -- width of the column
-					required_width = 88, -- min width of window required to show this column
-				},
-				created = {
-					enabled = true,
-					width = 20, -- width of the column
-					required_width = 110, -- min width of window required to show this column
-				},
-				symlink_target = {
-					enabled = false,
-				},
+		require("mini.files").setup({
+			options = {
+				use_as_default_explorer = true,
 			},
-			window = {
-				position = "current",
-				width = function()
-					return math.floor(vim.o.columns * 0.4)
-				end,
+			mappings = {
+				go_in_plus = "<CR>",
+			},
+			windows = {
+				preview = false,
+				width_focus = 30,
+				width_nofocus = 15,
 			},
 		})
 
-		vim.keymap.set("n", "<leader>e", "<Cmd>Neotree toggle<CR>")
+		vim.keymap.set("n", "<leader>e", function()
+			if not MiniFiles.close() then
+				MiniFiles.open(vim.uv.cwd(), false)
+			end
+		end)
+
 		vim.api.nvim_create_user_command("Reveal", function(opts)
-			vim.cmd("Neotree position=current dir=" .. opts.args)
+			require("mini.files").open(vim.fn.fnamemodify(opts.args, ":p"), true)
 		end, {
 			nargs = 1,
 			complete = "file",
-			desc = "Open neotree at path",
+			desc = "Open mini.files at path",
 		})
 	end,
 }
@@ -622,6 +561,36 @@ plugins.lsp = {
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 	},
 	config = function()
+		local function lsp_picker(scope, autojump)
+			local function symbol_query()
+				return vim.fn.input("Symbol: ")
+			end
+
+			if not autojump then
+				local opts = { scope = scope }
+				if scope == "workspace_symbol" then
+					opts.symbol_query = symbol_query()
+				end
+				return require("mini.extra").pickers.lsp(opts)
+			end
+
+			local function on_list(list)
+				vim.fn.setqflist({}, " ", list)
+				if #list.items == 1 then
+					vim.cmd.cfirst()
+				else
+					require("mini.extra").pickers.list({ scope = "quickfix" }, { source = { name = list.title } })
+				end
+			end
+
+			if scope == "references" then
+				return vim.lsp.buf.references(nil, { on_list = on_list })
+			end
+			if scope == "workspace_symbol" then
+				return vim.lsp.buf.workspace_symbol(symbol_query(), { on_list = on_list })
+			end
+			return vim.lsp.buf[scope]({ on_list = on_list })
+		end
 		vim.api.nvim_create_autocmd("LspAttach", {
 			group = vim.api.nvim_create_augroup("kickstart-lsp-attach", { clear = true }),
 			callback = function(event)
@@ -632,14 +601,21 @@ plugins.lsp = {
 				map("grn", vim.lsp.buf.rename, "[R]e[n]ame")
 				map("gra", vim.lsp.buf.code_action, "[G]oto Code [A]ction", { "n", "x" })
 				map("grD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
-				map("gri", require("telescope.builtin").lsp_implementations, "[G]oto [I]mplementation")
-				map("grd", require("telescope.builtin").lsp_definitions, "[G]oto [D]efinition")
-				map("gO", require("telescope.builtin").lsp_document_symbols, "Open Document Symbols")
-				map("gW", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
-				-- Jump to the type of the word under your cursor.
-				--  Useful when you're not sure what type a variable is and you want to see
-				--  the definition of its *type*, not where it was *defined*.
-				map("grt", require("telescope.builtin").lsp_type_definitions, "[G]oto [T]ype Definition")
+				map("grd", function()
+					lsp_picker("definition", true)
+				end, "[G]oto [D]efinition")
+				map("gri", function()
+					lsp_picker("implementation", true)
+				end, "[G]oto [I]mplementation")
+				map("grt", function()
+					lsp_picker("type_definition", true)
+				end, "[G]oto [T]ype Definition")
+				map("gW", function()
+					lsp_picker("workspace_symbol")
+				end, "Open Workspace Symbols")
+				map("gO", function()
+					lsp_picker("document_symbol")
+				end, "Open Document Symbols")
 				map("K", function()
 					return vim.lsp.buf.hover()
 				end, "Hover")
@@ -748,6 +724,7 @@ plugins.debugger = {
 			},
 			"jay-babu/mason-nvim-dap.nvim",
 			"nvim-neotest/nvim-nio",
+			"nvim-lua/plenary.nvim",
 		},
 		config = function()
 			require("mason-nvim-dap").setup({
@@ -1034,34 +1011,6 @@ plugins.debugger = {
 				"cppdbg",
 				"debugpy",
 			},
-		},
-	},
-}
-
-plugins.ai = {
-	{
-		"yetone/avante.nvim",
-		event = "VeryLazy",
-		version = false,
-		opts = {
-			instructions_file = "instructions.md",
-			provider = "codex",
-			selection = {
-				hint_display = "none",
-			},
-			selector = {
-				provider = "telescope",
-			},
-			windows = {
-				position = "right",
-				width = 45,
-				sidebar_header = { enabled = false },
-			},
-		},
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"MunifTanjim/nui.nvim",
-			"nvim-telescope/telescope.nvim",
 		},
 	},
 }
