@@ -158,8 +158,8 @@ function colorscheme.setup()
 
 	-- Editor UI
 	hl("Normal", { fg = p.fg, bg = p.bg })
-	hl("NormalFloat", { fg = p.fg, bg = p.bg_float })
-	hl("FloatBorder", { fg = p.border, bg = p.bg_float })
+	hl("NormalFloat", { fg = p.fg, bg = "none" })
+	hl("FloatBorder", { fg = p.border, bg = "none" })
 	hl("Cursor", { fg = p.bg, bg = p.fg })
 	hl("CursorLine", { bg = p.bg_line })
 	hl("CursorLineNr", { fg = p.tan, bold = true })
