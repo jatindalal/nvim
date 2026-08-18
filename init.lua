@@ -145,10 +145,6 @@ colorscheme.palette = {
 
 function colorscheme.setup()
 	local p = colorscheme.palette
-	-- vim.cmd("highlight clear")
-	-- if vim.fn.exists("syntax_on") then
-	-- 	vim.cmd("syntax reset")
-	-- end
 	vim.o.background = "dark"
 	vim.g.colors_name = "warmdesert"
 
@@ -157,7 +153,7 @@ function colorscheme.setup()
 	end
 
 	-- Editor UI
-	hl("Normal", { fg = p.fg, bg = p.bg })
+	hl("Normal", { fg = p.fg, bg = "none" })
 	hl("NormalFloat", { fg = p.fg, bg = "none" })
 	hl("FloatBorder", { fg = p.border, bg = "none" })
 	hl("Cursor", { fg = p.bg, bg = p.fg })
@@ -176,7 +172,7 @@ function colorscheme.setup()
 	hl("PmenuSel", { fg = p.bg, bg = p.brown })
 	hl("PmenuSbar", { bg = p.bg_float })
 	hl("PmenuThumb", { bg = p.brown_dim })
-	hl("StatusLine", { fg = p.fg, bg = p.bg_dim })
+	hl("StatusLine", { fg = p.brown_bright, bg = p.bg_dim })
 	hl("StatusLineNC", { fg = p.comment, bg = p.bg_dim })
 	hl("TabLine", { fg = p.brown_bright, bg = p.bg_dim })
 	hl("TabLineSel", { fg = p.bg, bg = p.brown_bright, bold = true })
@@ -292,41 +288,6 @@ end
 _G.palette = colorscheme.palette
 colorscheme.setup()
 
-function _G.TabLine()
-	local s = ""
-
-	for i = 1, vim.fn.tabpagenr("$") do
-		local winnr = vim.fn.tabpagewinnr(i)
-		local bufnr = vim.fn.tabpagebuflist(i)[winnr]
-
-		local name = vim.fn.bufname(bufnr)
-		if name == "" then
-			name = "[No Name]"
-		else
-			name = vim.fn.fnamemodify(name, ":t") -- filename only
-		end
-
-		local modified = vim.bo[bufnr].modified and " ●" or ""
-
-		if i == vim.fn.tabpagenr() then
-			s = s .. "%#TabLineSel#"
-		else
-			s = s .. "%#TabLine#"
-		end
-
-		-- Mouse click target
-		s = s .. "%" .. i .. "T"
-
-		-- Label
-		s = s .. " " .. i .. " " .. name .. modified .. " "
-	end
-
-	s = s .. "%#TabLineFill#%T"
-	return s
-end
-vim.o.tabline = "%!v:lua.TabLine()"
-vim.o.showtabline = 2
-
 -- plugins
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
@@ -358,73 +319,6 @@ plugins.editor = {
 	},
 	{
 		"tpope/vim-fugitive",
-	},
-	{
-		"nvim-lualine/lualine.nvim",
-		config = function()
-			local theme = require("lualine.themes.auto")
-
-			require("lualine").setup({
-				options = {
-					icons_enabled = false,
-					theme = "auto",
-					component_separators = { left = "", right = "" },
-					section_separators = { left = " ", right = " " },
-					disabled_filetypes = {
-						statusline = {},
-						winbar = {},
-					},
-					ignore_focus = {},
-					always_divide_middle = true,
-					always_show_tabline = true,
-					globalstatus = false,
-					refresh = {
-						statusline = 1000,
-						tabline = 1000,
-						winbar = 1000,
-						refresh_time = 16, -- ~60fps
-						events = {
-							"WinEnter",
-							"BufEnter",
-							"BufWritePost",
-							"SessionLoadPost",
-							"FileChangedShellPost",
-							"VimResized",
-							"Filetype",
-							"CursorMoved",
-							"CursorMovedI",
-							"ModeChanged",
-						},
-					},
-				},
-				sections = {
-					lualine_a = {
-						{
-							"mode",
-							fmt = function(str)
-								return str:sub(1, 1)
-							end,
-						},
-					},
-					lualine_b = { "branch", "diff" },
-					lualine_c = {},
-					lualine_x = { "filename", "filetype" },
-					lualine_y = { "progress" },
-					lualine_z = { "location" },
-				},
-				inactive_sections = {
-					lualine_a = {},
-					lualine_b = {},
-					lualine_c = { "filename" },
-					lualine_x = { "location" },
-					lualine_y = {},
-					lualine_z = {},
-				},
-				winbar = {},
-				inactive_winbar = {},
-				extensions = {},
-			})
-		end,
 	},
 }
 
@@ -477,6 +371,11 @@ plugins.mini_files = {
 		})
 
 		vim.keymap.set("n", "<leader>e", function()
+			if not MiniFiles.close() then
+				MiniFiles.open(vim.uv.cwd(), true)
+			end
+		end)
+		vim.keymap.set("n", "<leader>E", function()
 			if not MiniFiles.close() then
 				MiniFiles.open(vim.uv.cwd(), false)
 			end
