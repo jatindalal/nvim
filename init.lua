@@ -183,12 +183,12 @@ function colorscheme.setup()
 	hl("Whitespace", { fg = p.border })
 	hl("MatchParen", { fg = p.tan, bold = true, underline = true })
 	hl("WinBar", { fg = p.fg_dim, bg = p.bg })
-	hl("ErrorMsg",   { fg = p.red })
+	hl("ErrorMsg", { fg = p.red })
 	hl("WarningMsg", { fg = p.tan })
-	hl("MoreMsg",    { fg = p.green })
-	hl("Question",   { fg = p.brown_bright })
-	hl("ModeMsg",    { fg = p.fg, bold = true })
-	hl("MsgArea",    { fg = p.fg, bg = p.bg })
+	hl("MoreMsg", { fg = p.green })
+	hl("Question", { fg = p.brown_bright })
+	hl("ModeMsg", { fg = p.fg, bold = true })
+	hl("MsgArea", { fg = p.fg, bg = p.bg })
 	hl("MsgSeparator", { fg = p.border, bg = p.bg })
 
 	-- Syntax
@@ -393,23 +393,9 @@ plugins.mini_files = {
 
 plugins.formatter = {
 	{
-		"mason-org/mason.nvim",
-		opts = {},
-	},
-	{
-		"WhoIsSethDaniel/mason-tool-installer.nvim",
-		dependencies = { "mason-org/mason.nvim" },
-		opts = {
-			ensure_installed = {
-				"stylua",
-				"prettier",
-				"shfmt",
-				"isort",
-				"clang-format",
-			},
-		},
-	},
-	{
+		-- brew install stylua shfmt jq clang-format node && npm install -g prettier && python3 -m pip install ruff
+		-- sudo apt update && sudo apt install -y cargo jq clang-format nodejs npm && cargo install stylua shfmt && npm install -g prettier && python3 -m pip install ruff
+		-- winget install --id JohnnyMorganz.Stylua --id mvdan.shfmt --id jqlang.jq --id LLVM.LLVM --id OpenJS.NodeJS; npm install -g prettier; python -m pip install ruff
 		"stevearc/conform.nvim",
 		event = { "BufWritePre" },
 		cmd = { "ConformInfo" },
@@ -427,14 +413,13 @@ plugins.formatter = {
 			notify_on_error = true,
 			formatters_by_ft = {
 				lua = { "stylua" },
-				javascript = { "prettierd", "prettier" },
-				typescript = { "prettierd", "prettier" },
-				javascriptreact = { "prettierd", "prettier" },
-				typescriptreact = { "prettierd", "prettier" },
-				sh = { "shfmt" },
-				python = { "isort", "black" },
-				json = { "prettierd", "prettier" },
+				javascript = { "prettier" },
+				typescript = { "prettier" },
 				markdown = { "prettier" },
+				sh = { "shfmt" },
+				python = { "ruff_format", "black" },
+				json = { "jq" },
+				jsonc = { "jq" },
 				cpp = { "clang_format" },
 				c = { "clang_format" },
 			},
