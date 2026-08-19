@@ -393,9 +393,9 @@ plugins.mini_files = {
 
 plugins.formatter = {
 	{
-		-- brew install stylua shfmt jq clang-format node && npm install -g prettier && python3 -m pip install ruff
-		-- sudo apt update && sudo apt install -y cargo jq clang-format nodejs npm && cargo install stylua shfmt && npm install -g prettier && python3 -m pip install ruff
-		-- winget install --id JohnnyMorganz.Stylua --id mvdan.shfmt --id jqlang.jq --id LLVM.LLVM --id OpenJS.NodeJS; npm install -g prettier; python -m pip install ruff
+		-- brew install stylua shfmt jq clang-format && python3 -m pip install ruff
+		-- sudo apt update && sudo apt install -y cargo jq clang-format && cargo install stylua shfmt && python3 -m pip install ruff
+		-- winget install --id JohnnyMorganz.Stylua --id mvdan.shfmt --id jqlang.jq --id LLVM.LLVM; python -m pip install ruff
 		"stevearc/conform.nvim",
 		event = { "BufWritePre" },
 		cmd = { "ConformInfo" },
@@ -413,13 +413,9 @@ plugins.formatter = {
 			notify_on_error = true,
 			formatters_by_ft = {
 				lua = { "stylua" },
-				javascript = { "prettier" },
-				typescript = { "prettier" },
-				markdown = { "prettier" },
 				sh = { "shfmt" },
-				python = { "ruff_format", "black" },
+				python = { "ruff_format" },
 				json = { "jq" },
-				jsonc = { "jq" },
 				cpp = { "clang_format" },
 				c = { "clang_format" },
 			},
