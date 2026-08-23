@@ -107,14 +107,41 @@ vim.api.nvim_create_autocmd("VimResized", {
 	end,
 })
 
-vim.cmd.colorscheme("retrobox")
-
 --
 -- plugins
 --
 local function gh(repo)
 	return "https://github.com/" .. repo
 end
+
+-- colorscheme
+vim.pack.add({
+	gh("rebelot/kanagawa.nvim"),
+})
+require("kanagawa").setup({
+	commentStyle = { italic = false },
+	keywordStyle = { italic = false },
+	transparent = true,
+	colors = {
+		theme = {
+			all = { ui = {
+				bg_gutter = "none",
+			} },
+		},
+	},
+	overrides = function(colors)
+		return {
+			LineNr = { fg = "#7a6a58" },
+			TabLine = { bg = "#050403", fg = "#666666" },
+			TabLineSel = { bg = "#060504" },
+			TabLineFill = { bg = "none" },
+			NormalFloat = { bg = "none" },
+			FloatBorder = { bg = "none" },
+			Folded = { fg = "#ccccaa", bg = "none"}
+		}
+	end,
+})
+vim.cmd("colorscheme kanagawa")
 
 -- editor
 vim.pack.add({
@@ -203,7 +230,7 @@ conform.setup({
 		},
 	},
 })
-vim.keymap.set({ "n" }, "<leader>f", function()
+vim.keymap.set({ "n", "v" }, "<leader>f", function()
 	conform.format({ async = true, lsp_format = "fallback" })
 end)
 
@@ -268,17 +295,15 @@ for name, server in pairs(servers) do
 	vim.lsp.enable(name)
 end
 
-
 -- debugger
 vim.pack.add({
-	gh "mason-org/mason.nvim",
-	gh "nvim-lua/plenary.nvim",
-	gh "rcarriga/nvim-dap-ui",
-	gh "theHamsta/nvim-dap-virtual-text",
-	gh "nvim-neotest/nvim-nio",
-	gh "mfussenegger/nvim-dap",
-	gh "rcarriga/nvim-dap-ui",
-
+	gh("mason-org/mason.nvim"),
+	gh("nvim-lua/plenary.nvim"),
+	gh("rcarriga/nvim-dap-ui"),
+	gh("theHamsta/nvim-dap-virtual-text"),
+	gh("nvim-neotest/nvim-nio"),
+	gh("mfussenegger/nvim-dap"),
+	gh("rcarriga/nvim-dap-ui"),
 })
 require("mason").setup({})
 local dap = require("dap")
@@ -480,22 +505,54 @@ end
 vim.keymap.set({ "n" }, "<leader>dB", function()
 	dap.set_breakpoint(vim.fn.input("Breakpoint condition: "))
 end)
-vim.keymap.set({ "n" }, "<leader>db", function() dap.toggle_breakpoint() end)
-vim.keymap.set({ "n" }, "<leader>dc", function() dap.continue() end)
-vim.keymap.set({ "n" }, "<leader>da", function() dap.continue({ before = get_args }) end)
-vim.keymap.set({ "n" }, "<leader>dC", function() dap.run_to_cursor() end)
-vim.keymap.set({ "n" }, "<leader>dg", function() dap.goto_() end)
-vim.keymap.set({ "n" }, "<leader>di", function() dap.step_into() end)
-vim.keymap.set({ "n" }, "<leader>dj", function() dap.down() end)
-vim.keymap.set({ "n" }, "<leader>dk", function() dap.up() end)
-vim.keymap.set({ "n" }, "<leader>dl", function() dap.run_last() end)
-vim.keymap.set({ "n" }, "<leader>do", function() dap.step_out() end)
-vim.keymap.set({ "n" }, "<leader>dO", function() dap.step_over() end)
-vim.keymap.set({ "n" }, "<leader>dP", function() dap.pause() end)
-vim.keymap.set({ "n" }, "<leader>dr", function() dap.repl.toggle() end)
-vim.keymap.set({ "n" }, "<leader>ds", function() dap.session() end)
-vim.keymap.set({ "n" }, "<leader>dt", function() dap.terminate() end)
-vim.keymap.set({ "n" }, "<leader>dw", function() require("dap.ui.widgets").hover() end)
+vim.keymap.set({ "n" }, "<leader>db", function()
+	dap.toggle_breakpoint()
+end)
+vim.keymap.set({ "n" }, "<leader>dc", function()
+	dap.continue()
+end)
+vim.keymap.set({ "n" }, "<leader>da", function()
+	dap.continue({ before = get_args })
+end)
+vim.keymap.set({ "n" }, "<leader>dC", function()
+	dap.run_to_cursor()
+end)
+vim.keymap.set({ "n" }, "<leader>dg", function()
+	dap.goto_()
+end)
+vim.keymap.set({ "n" }, "<leader>di", function()
+	dap.step_into()
+end)
+vim.keymap.set({ "n" }, "<leader>dj", function()
+	dap.down()
+end)
+vim.keymap.set({ "n" }, "<leader>dk", function()
+	dap.up()
+end)
+vim.keymap.set({ "n" }, "<leader>dl", function()
+	dap.run_last()
+end)
+vim.keymap.set({ "n" }, "<leader>do", function()
+	dap.step_out()
+end)
+vim.keymap.set({ "n" }, "<leader>dO", function()
+	dap.step_over()
+end)
+vim.keymap.set({ "n" }, "<leader>dP", function()
+	dap.pause()
+end)
+vim.keymap.set({ "n" }, "<leader>dr", function()
+	dap.repl.toggle()
+end)
+vim.keymap.set({ "n" }, "<leader>ds", function()
+	dap.session()
+end)
+vim.keymap.set({ "n" }, "<leader>dt", function()
+	dap.terminate()
+end)
+vim.keymap.set({ "n" }, "<leader>dw", function()
+	require("dap.ui.widgets").hover()
+end)
 local dapui = require("dapui")
 dapui.setup({
 	icons = {
@@ -517,8 +574,14 @@ dapui.setup({
 		},
 	},
 })
-vim.keymap.set({ "n" }, "<leader>du", function() dapui.toggle() end)
-vim.keymap.set({ "n", "v" }, "<leader>de", function() dapui.eval() end)
-dap.listeners.after.event_initialized["dapui_config"] = function() dapui.open() end
+vim.keymap.set({ "n" }, "<leader>du", function()
+	dapui.toggle()
+end)
+vim.keymap.set({ "n", "v" }, "<leader>de", function()
+	dapui.eval()
+end)
+dap.listeners.after.event_initialized["dapui_config"] = function()
+	dapui.open()
+end
 dap.listeners.before.event_terminated["dapui_config"] = nil
 dap.listeners.before.event_exited["dapui_config"] = nil
