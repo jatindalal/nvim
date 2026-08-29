@@ -38,7 +38,7 @@ vim.o.exrc = true
 vim.o.secure = true
 
 -- keymaps
-vim.keymap.set("t", "<Esc>", "<C-\\><C-n>")
+vim.keymap.set({ "t" }, "<Esc>", "<C-\\><C-n>")
 vim.keymap.set({ "t", "i" }, "<C-h>", "<C-\\><C-n><C-w>h")
 vim.keymap.set({ "t", "i" }, "<C-j>", "<C-\\><C-n><C-w>j")
 vim.keymap.set({ "t", "i" }, "<C-k>", "<C-\\><C-n><C-w>k")
@@ -91,6 +91,13 @@ vim.keymap.set("t", "<Esc>", function()
 	end
 	return "<C-\\><C-N>"
 end, { expr = true })
+vim.keymap.set({ "n", "v" }, "<leader>", "<nop>")
+vim.keymap.set(
+	"n",
+	"<leader>s",
+	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
+	{ silent = false, desc = "Search and replace word under cursor" }
+)
 
 -- autocmds
 vim.api.nvim_create_autocmd("TextYankPost", {
@@ -105,6 +112,82 @@ vim.api.nvim_create_autocmd("VimResized", {
 		vim.cmd("tabdo wincmd =")
 		vim.cmd("tabnext " .. current_tab)
 	end,
+})
+vim.api.nvim_create_autocmd("BufReadPost", {
+	callback = function(args)
+		local mark = vim.api.nvim_buf_get_mark(args.buf, '"')
+		local line_count = vim.api.nvim_buf_line_count(args.buf)
+		if mark[1] > 0 and mark[1] <= line_count then
+			vim.api.nvim_win_set_cursor(0, mark)
+			vim.schedule(function()
+				vim.cmd("normal! zz")
+			end)
+		end
+	end,
+})
+vim.api.nvim_create_autocmd("FileType", {
+	group = vim.api.nvim_create_augroup("no_auto_comment", {}),
+	callback = function()
+		vim.opt_local.formatoptions:remove({ "c", "r", "o" })
+	end,
+})
+vim.api.nvim_create_autocmd("BufRead", {
+	group = vim.api.nvim_create_augroup("dotenv_ft", { clear = true }),
+	pattern = { ".env", ".env.*" },
+	callback = function()
+		vim.bo.filetype = "dosini"
+	end,
+})
+
+local ignore_patterns = {
+	-- "node_modules",
+	-- "%.git",
+	-- "%.cache",
+	-- "dist",
+	-- "build",
+	-- "%.tmp",
+	-- "%.log",
+}
+
+function _G.native_find(text, _)
+	local files = vim.fn.glob("**/*", true, true)
+	local result = {}
+	for _, f in ipairs(files) do
+		if vim.fn.isdirectory(f) == 0 then
+			local skip = false
+			for _, pat in ipairs(ignore_patterns) do
+				if f:match(pat) then
+					skip = true
+					break
+				end
+			end
+			if not skip then
+				result[#result + 1] = f
+			end
+		end
+	end
+	return vim.fn.matchfuzzy(result, text)
+end
+vim.opt.findfunc = "v:lua.native_find"
+
+vim.opt.grepprg = "rg --vimgrep --smart-case --hidden"
+vim.opt.grepformat = "%f:%l:%c:%m"
+vim.api.nvim_create_user_command("Grep", function(opts)
+	local pattern = opts.args
+
+	if pattern == "" then
+		vim.ui.input({ prompt = "Grep: " }, function(input)
+			if input and input ~= "" then
+				vim.cmd("silent grep! " .. vim.fn.fnameescape(input))
+				vim.cmd("copen")
+			end
+		end)
+	else
+		vim.cmd("silent grep! " .. vim.fn.fnameescape(pattern))
+		vim.cmd("copen")
+	end
+end, {
+	nargs = "?",
 })
 
 --
@@ -137,7 +220,7 @@ require("kanagawa").setup({
 			TabLineFill = { bg = "none" },
 			NormalFloat = { bg = "none" },
 			FloatBorder = { bg = "none" },
-			Folded = { fg = "#ccccaa", bg = "none"}
+			Folded = { fg = "#ccccaa", bg = "none" },
 		}
 	end,
 })
@@ -191,8 +274,6 @@ require("mini.files").setup({
 	mappings = { go_in_plus = "<CR>" },
 	windows = {
 		preview = false,
-		width_focus = 30,
-		width_nofocus = 15,
 	},
 })
 
