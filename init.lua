@@ -206,7 +206,35 @@ require("kanagawa").setup({
 	keywordStyle = { italic = false },
 	transparent = true,
 	colors = {
+		palette = {
+			-- blues/violets -> soft teal + warm earth (from terminal palette)
+			oniViolet = "#d98a4b",     -- keywords: burnt orange instead of purple
+			oniViolet2 = "#c9a883",
+			springViolet1 = "#9a8a72", -- taupe
+			springViolet2 = "#b0a288",
+			crystalBlue = "#7fb4a8",   -- the teal/cyan you like
+			springBlue = "#7fb4a8",
+			-- bluish background shades -> warm near-black neutrals
+			waveBlue1 = "#1c1814",
+			waveBlue2 = "#27211a",
+			winterBlue = "#201c17",
+			dragonBlue = "#1c1814",
+			sumiInk3 = "#2a241d",
+		},
 		theme = {
+			wave = {
+				oniViolet = "#d98a4b",
+				oniViolet2 = "#c9a883",
+				springViolet1 = "#9a8a72",
+				springViolet2 = "#b0a288",
+				crystalBlue = "#7fb4a8",
+				springBlue = "#7fb4a8",
+				waveBlue1 = "#1c1814",
+				waveBlue2 = "#27211a",
+				winterBlue = "#201c17",
+				dragonBlue = "#1c1814",
+				sumiInk3 = "#2a241d",
+			},
 			all = { ui = {
 				bg_gutter = "none",
 			} },
@@ -221,6 +249,22 @@ require("kanagawa").setup({
 			NormalFloat = { bg = "none" },
 			FloatBorder = { bg = "none" },
 			Folded = { fg = "#ccccaa", bg = "none" },
+			-- warm earth syntax accents
+			Keyword = { fg = "#d98a4b" },
+			Statement = { fg = "#d98a4b" },
+			PreProc = { fg = "#a17a56" },
+			Type = { fg = "#8fa876" },
+			Special = { fg = "#d96459" },
+			Number = { fg = "#d98a4b" },
+			Boolean = { fg = "#8fa876" },
+			["@keyword"] = { fg = "#d98a4b" },
+			["@type"] = { fg = "#8fa876" },
+			["@number"] = { fg = "#d98a4b" },
+			["@boolean"] = { fg = "#8fa876" },
+			["@operator"] = { fg = "#9a7856" },
+			["@constant"] = { fg = "#a9b665" },
+			["@parameter"] = { fg = "#d8cbb3" },
+			["@property"] = { fg = "#e3d5b3" },
 		}
 	end,
 })
