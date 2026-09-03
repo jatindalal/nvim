@@ -302,7 +302,7 @@ conform.setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
 		sh = { "shfmt" },
-		python = { "ruff_format" },
+		python = { "black", "ruff_format" },
 		json = { "prettier", "jq" },
 		cpp = { "clang_format" },
 		c = { "clang_format" },
