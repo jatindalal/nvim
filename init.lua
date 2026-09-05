@@ -221,12 +221,13 @@ require("kanagawa").setup({
 			NormalFloat = { bg = "none" },
 			FloatBorder = { bg = "none" },
 			Folded = { fg = "#ccccaa", bg = "none" },
-			StatusLine = { bg = "none"},
-			StatusLineNC = { bg = "none", fg="#666666" },
+			StatusLine = { bg = "none" },
+			StatusLineNC = { bg = "none", fg = "#666666" },
 			Whitespace = { fg = "#444444" },
-			Normal = { bg = "#080808"}
-		} 
-	end
+			Normal = { bg = "#080808" },
+			TelescopeBorder = { fg = "#ccccbb", bg = "none" }
+		}
+	end,
 })
 vim.cmd.colorscheme("kanagawa")
 
@@ -239,33 +240,40 @@ require("nvim-autopairs").setup({})
 
 -- picker
 vim.pack.add({
-	gh("nvim-mini/mini.extra"),
-	gh("nvim-mini/mini.pick"),
+	gh("nvim-telescope/telescope.nvim"),
+	gh("nvim-lua/plenary.nvim"),
+	gh("nvim-telescope/telescope-ui-select.nvim"),
 })
-require("mini.pick").setup({
-	source = {
-		show = require("mini.pick").default_show,
+require("telescope").setup({
+	pickers = {
+		find_files = {
+			file_ignore_patterns = { "node_modules", ".git", ".venv", "build" },
+			hidden = true,
+			previewer = false,
+		},
+		live_grep = {
+			previewer = false,
+			file_ignore_patterns = { "node_modules", ".git", ".venv" },
+			additional_args = function(_)
+				return { "--hidden" }
+			end,
+		},
+		buffers = {
+			previewer = false,
+		},
+		current_buffer_fuzzy_find = {
+			previewer = false,
+		},
 	},
 })
-require("mini.extra").setup()
-vim.ui.select = MiniPick.ui_select
-local pick = MiniPick.builtin
-local extra = MiniExtra.pickers
-vim.keymap.set("n", ";f", function()
-	pick.files({ tool = "rg" })
-end)
-vim.keymap.set("n", ";r", function()
-	pick.grep_live()
-end)
-vim.keymap.set("n", ";l", function()
-	extra.buf_lines({ scope = "current" })
-end)
-vim.keymap.set("n", ";b", function()
-	pick.buffers()
-end)
-vim.keymap.set("n", ";c", function()
-	vim.cmd("e " .. vim.fn.stdpath("config") .. "/init.lua")
-end)
+pcall(require("telescope").load_extension, "fzf")
+pcall(require("telescope").load_extension, "ui-select")
+local builtin = require("telescope.builtin")
+vim.keymap.set("n", ";f", function() builtin.find_files() end)
+vim.keymap.set("n", ";r", function() builtin.live_grep() end)
+vim.keymap.set("n", ";l", function() builtin.current_buffer_fuzzy_find() end)
+vim.keymap.set("n", ";b", function() builtin.buffers() end)
+vim.keymap.set("n", ";c", function() vim.cmd("e " .. vim.fn.stdpath("config") .. "/init.lua") end)
 
 -- files
 vim.pack.add({
@@ -333,11 +341,11 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		map("grn", vim.lsp.buf.rename, "[R]e[n]ame")
 		map("gra", vim.lsp.buf.code_action, "[G]oto Code [A]ction", { "n", "x" })
 		map("grD", vim.lsp.buf.declaration, "[G]oto [D]eclaration")
-		map("grd", vim.lsp.buf.definition, "[G]oto [D]efinition")
-		map("gri", vim.lsp.buf.implementation, "[G]oto [I]mplementation")
-		map("grt", vim.lsp.buf.type_definition, "[G]oto [T]ype Definition")
-		map("gW", vim.lsp.buf.workspace_symbol, "Open Workspace Symbols")
-		map("gO", vim.lsp.buf.document_symbol, "Open Document Symbols")
+		map("grd", builtin.lsp_definitions, "[G]oto [D]efinition")
+		map("gri", builtin.lsp_implementations, "[G]oto [I]mplementation")
+		map("grt", builtin.lsp_type_definitions, "[G]oto [T]ype Definition")
+		map("gW", builtin.lsp_dynamic_workspace_symbols, "Open Workspace Symbols")
+		map("gO", builtin.lsp_document_symbols, "Open Document Symbols")
 		map("K", vim.lsp.buf.hover, "Hover")
 		map("gK", vim.lsp.buf.signature_help, "Signature Help")
 
