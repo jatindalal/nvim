@@ -98,6 +98,9 @@ vim.keymap.set(
 	[[:%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>]],
 	{ silent = false, desc = "Search and replace word under cursor" }
 )
+vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, {
+	desc = "Diagnostics to location list",
+})
 
 -- autocmds
 vim.api.nvim_create_autocmd("TextYankPost", {
