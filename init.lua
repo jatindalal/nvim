@@ -672,3 +672,34 @@ dap.listeners.after.event_initialized["dapui_config"] = function()
 end
 dap.listeners.before.event_terminated["dapui_config"] = nil
 dap.listeners.before.event_exited["dapui_config"] = nil
+
+--completions
+vim.pack.add({ { src = gh("saghen/blink.cmp"), version = vim.version.range("1.*") } })
+require("blink.cmp").setup({
+	keymap = {
+		preset = "enter",
+		["<C-space>"] = {
+			function(cmp)
+				cmp.show()
+			end,
+		},
+	},
+	completion = {
+		menu = {
+            border = 'rounded',
+			auto_show = false,
+			draw = {
+				columns = { { "label", "label_description", gap = 0 } },
+			},
+		},
+	},
+	sources = { default = { "lsp", "path" } },
+	snippets = { preset = "default" },
+	fuzzy = { implementation = "lua" },
+	signature = { enabled = false },
+})
+local hl = vim.api.nvim_set_hl
+hl(0, 'BlinkCmpMenu',  { bg = 'none' })
+hl(0, 'BlinkCmpMenuSelection',  { bg = '#ccccaa', fg='#010101' })
+hl(0, 'BlinkCmpMenuBorder', {fg = '#ccccaa', bg='none'})
+hl(0, 'BlinkCmpScrollBarThumb', {fg = '#ccccaa', bg='#ccccaa'})
