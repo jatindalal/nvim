@@ -695,3 +695,11 @@ hl(0, 'BlinkCmpMenu',  { bg = 'none' })
 hl(0, 'BlinkCmpMenuSelection',  { bg = '#ccccaa', fg='#010101' })
 hl(0, 'BlinkCmpMenuBorder', {fg = '#ccccaa', bg='none'})
 hl(0, 'BlinkCmpScrollBarThumb', {fg = '#ccccaa', bg='#ccccaa'})
+
+-- markdown
+vim.pack.add({
+    'https://github.com/nvim-treesitter/nvim-treesitter',
+    'https://github.com/nvim-mini/mini.icons',
+    'https://github.com/MeanderingProgrammer/render-markdown.nvim',
+})
+require('render-markdown').setup({})
