@@ -142,36 +142,45 @@ vim.api.nvim_create_autocmd("BufRead", {
 	end,
 })
 
-local ignore_patterns = {
-	-- "node_modules",
-	-- "%.git",
-	-- "%.cache",
-	-- "dist",
-	-- "build",
-	-- "%.tmp",
-	-- "%.log",
-}
+local function find_files(pattern)
+	local files = vim.fn.systemlist({
+		"fd",
+		"--type", "f",
+		"--hidden",
+	})
 
-function _G.native_find(text, _)
-	local files = vim.fn.glob("**/*", true, true)
-	local result = {}
-	for _, f in ipairs(files) do
-		if vim.fn.isdirectory(f) == 0 then
-			local skip = false
-			for _, pat in ipairs(ignore_patterns) do
-				if f:match(pat) then
-					skip = true
-					break
-				end
-			end
-			if not skip then
-				result[#result + 1] = f
-			end
-		end
+	if vim.v.shell_error ~= 0 then
+		return {}
 	end
-	return vim.fn.matchfuzzy(result, text)
+
+	return vim.fn.matchfuzzy(files, pattern)
 end
-vim.opt.findfunc = "v:lua.native_find"
+vim.api.nvim_create_user_command("Find", function(opts)
+	local function run(pattern)
+		if not pattern or pattern == "" then
+			return
+		end
+
+		local files = find_files(pattern)
+
+		vim.fn.setqflist({}, " ", {
+			title = "Find: " .. pattern,
+			items = vim.tbl_map(function(file)
+				return { filename = file }
+			end, files),
+		})
+
+		vim.cmd("copen")
+	end
+
+	if opts.args ~= "" then
+		run(opts.args)
+	else
+		vim.ui.input({ prompt = "Find: " }, run)
+	end
+end, {
+	nargs = "?",
+})
 
 vim.opt.grepprg = "rg --vimgrep --smart-case --hidden"
 vim.opt.grepformat = "%f:%l:%c:%m"
@@ -241,6 +250,11 @@ vim.pack.add({
 })
 require("nvim-autopairs").setup({})
 
+-- icons
+vim.pack.add({
+    gh("nvim-tree/nvim-web-devicons")
+})
+
 -- picker
 vim.pack.add({
 	gh("nvim-telescope/telescope.nvim"),
@@ -283,7 +297,7 @@ vim.pack.add({
 	gh("nvim-mini/mini.files"),
 	gh("nvim-mini/mini.icons"),
 })
-require("mini.icons").setup({ style = "ascii" })
+require("mini.icons").setup({})
 require("mini.files").setup({
 	options = { use_as_default_explorer = true },
 	mappings = { go_in_plus = "<CR>" },
@@ -569,10 +583,10 @@ dap.configurations.python = { launch_current_file, launch_file, attach_config }
 
 vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, link = "Visual" })
 local dap_icons = {
-	Stopped = { "▶", "DiagnosticWarn", "DapStoppedLine" },
-	Breakpoint = "●",
-	BreakpointCondition = "◐",
-	BreakpointRejected = "○",
+    Stopped = { "", "DiagnosticWarn", "DapStoppedLine" },
+	Breakpoint = "",
+	BreakpointCondition = "",
+	BreakpointRejected = "",
 	LogPoint = "◆",
 }
 for name, sign in pairs(dap_icons) do
@@ -641,26 +655,7 @@ vim.keymap.set({ "n" }, "<leader>dw", function()
 	require("dap.ui.widgets").hover()
 end)
 local dapui = require("dapui")
-dapui.setup({
-	icons = {
-		expanded = "▾",
-		collapsed = "▸",
-		current_frame = "▸",
-	},
-	controls = {
-		icons = {
-			pause = "॥",
-			play = "▶",
-			step_into = "↓",
-			step_over = "↷",
-			step_out = "↑",
-			step_back = "↺",
-			run_last = "⟳",
-			terminate = "■",
-			disconnect = "⏏",
-		},
-	},
-})
+dapui.setup({ })
 vim.keymap.set({ "n" }, "<leader>du", function()
 	dapui.toggle()
 end)
@@ -687,10 +682,7 @@ require("blink.cmp").setup({
 	completion = {
 		menu = {
             border = 'rounded',
-			auto_show = false,
-			draw = {
-				columns = { { "label", "label_description", gap = 0 } },
-			},
+			auto_show = true,
 		},
 	},
 	sources = { default = { "lsp", "path" } },
