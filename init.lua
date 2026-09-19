@@ -142,36 +142,45 @@ vim.api.nvim_create_autocmd("BufRead", {
 	end,
 })
 
-local ignore_patterns = {
-	-- "node_modules",
-	-- "%.git",
-	-- "%.cache",
-	-- "dist",
-	-- "build",
-	-- "%.tmp",
-	-- "%.log",
-}
+local function find_files(pattern)
+	local files = vim.fn.systemlist({
+		"fd",
+		"--type", "f",
+		"--hidden",
+	})
 
-function _G.native_find(text, _)
-	local files = vim.fn.glob("**/*", true, true)
-	local result = {}
-	for _, f in ipairs(files) do
-		if vim.fn.isdirectory(f) == 0 then
-			local skip = false
-			for _, pat in ipairs(ignore_patterns) do
-				if f:match(pat) then
-					skip = true
-					break
-				end
-			end
-			if not skip then
-				result[#result + 1] = f
-			end
-		end
+	if vim.v.shell_error ~= 0 then
+		return {}
 	end
-	return vim.fn.matchfuzzy(result, text)
+
+	return vim.fn.matchfuzzy(files, pattern)
 end
-vim.opt.findfunc = "v:lua.native_find"
+vim.api.nvim_create_user_command("Find", function(opts)
+	local function run(pattern)
+		if not pattern or pattern == "" then
+			return
+		end
+
+		local files = find_files(pattern)
+
+		vim.fn.setqflist({}, " ", {
+			title = "Find: " .. pattern,
+			items = vim.tbl_map(function(file)
+				return { filename = file }
+			end, files),
+		})
+
+		vim.cmd("copen")
+	end
+
+	if opts.args ~= "" then
+		run(opts.args)
+	else
+		vim.ui.input({ prompt = "Find: " }, run)
+	end
+end, {
+	nargs = "?",
+})
 
 vim.opt.grepprg = "rg --vimgrep --smart-case --hidden"
 vim.opt.grepformat = "%f:%l:%c:%m"
