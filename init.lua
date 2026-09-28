@@ -210,38 +210,19 @@ local function gh(repo)
 end
 
 -- colorscheme
-vim.pack.add({
-	gh("rebelot/kanagawa.nvim"),
+vim.pack.add({ gh("skylarmb/torchlight.nvim") })
+require('torchlight').setup({
+    contrast = "stark",
 })
-require("kanagawa").setup({
-	commentStyle = { italic = false },
-	keywordStyle = { italic = false },
-	transparent = true,
-	colors = {
-		theme = {
-			all = { ui = {
-				bg_gutter = "none",
-			} },
-		},
-	},
-	overrides = function(colors)
-		return {
-			LineNr = { fg = "#999988" },
-			TabLine = { bg = "#050403", fg = "#666666" },
-			TabLineSel = { bg = "#060504" },
-			TabLineFill = { bg = "none" },
-			NormalFloat = { bg = "none" },
-			FloatBorder = { bg = "none" },
-			Folded = { fg = "#ccccaa", bg = "none" },
-			StatusLine = { bg = "none" },
-			StatusLineNC = { bg = "none", fg = "#666666" },
-			Whitespace = { fg = "#444444" },
-			Normal = { bg = "#080808" },
-			TelescopeBorder = { fg = "#ccccbb", bg = "none" }
-		}
-	end,
-})
-vim.cmd.colorscheme("kanagawa")
+local hl = vim.api.nvim_set_hl
+hl(0, 'TabLineFill', { bg = "none" })
+hl(0, 'TabLine', { bg = "none", fg="#979764" })
+hl(0, 'TabLineSel', { bg = "none", fg="#c6aa77" })
+hl(0, 'FloatBorder', { bg = "none", fg="#dcbb7e" })
+hl(0, 'Folded', { bg = "none", fg="#979764" })
+hl(0, 'StatusLine', { bg = "none", fg="#c6aa77" })
+hl(0, 'StatusLineNC', { bg = "none", fg="#414035" })
+hl(0, 'TelescopeBorder', { bg = "none", fg="#dcbb7e" })
 
 -- editor
 vim.pack.add({
@@ -690,7 +671,6 @@ require("blink.cmp").setup({
 	fuzzy = { implementation = "lua" },
 	signature = { enabled = false },
 })
-local hl = vim.api.nvim_set_hl
 hl(0, 'BlinkCmpMenu',  { bg = 'none' })
 hl(0, 'BlinkCmpMenuSelection',  { bg = '#ccccaa', fg='#010101' })
 hl(0, 'BlinkCmpMenuBorder', {fg = '#ccccaa', bg='none'})
