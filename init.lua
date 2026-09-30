@@ -52,7 +52,20 @@ vim.keymap.set({ "n" }, "<S-l>", vim.cmd.tabnext)
 vim.keymap.set({ "n" }, "<S-h>", vim.cmd.tabprev)
 vim.keymap.set({ "n" }, "ss", vim.cmd.split)
 vim.keymap.set({ "n" }, "sv", vim.cmd.vsplit)
-vim.keymap.set({ "n" }, "<leader>e", vim.cmd.Explore)
+vim.keymap.set({ "n" }, "<leader>e", function()
+    if vim.bo.filetype == "netrw" then
+        if netrw_prev_buf and vim.api.nvim_buf_is_valid(netrw_prev_buf) then
+            vim.api.nvim_win_set_buf(0, netrw_prev_buf)
+        else
+            vim.cmd.enew()
+        end
+        netrw_prev_buf = nil
+    else
+        netrw_prev_buf = vim.api.nvim_get_current_buf()
+        vim.cmd.Explore()
+    end
+
+end)
 vim.keymap.set({ "n" }, "<leader>r", function()
 	vim.cmd("source " .. vim.fn.stdpath("config") .. "/init.lua")
 	vim.notify("Reloaded Config", vim.log.levels.INFO, {})
