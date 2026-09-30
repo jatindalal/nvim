@@ -156,11 +156,21 @@ vim.api.nvim_create_autocmd("BufRead", {
 })
 
 local function find_files(pattern)
-	local files = vim.fn.systemlist({
-		"fd",
-		"--type", "f",
-		"--hidden",
-	})
+    if vim.fn.executable("fd") == 1 then
+		files = vim.fn.systemlist({
+			"fd",
+			"--type", "f",
+			"--hidden",
+		})
+    elseif vim.fn.executable("find") == 1 then
+		files = vim.fn.systemlist({
+			"find",
+			".",
+			"-type", "f",
+		})
+	else
+		return {}
+	end
 
 	if vim.v.shell_error ~= 0 then
 		return {}
@@ -195,8 +205,13 @@ end, {
 	nargs = "?",
 })
 
-vim.opt.grepprg = "rg --vimgrep --smart-case --hidden"
-vim.opt.grepformat = "%f:%l:%c:%m"
+if vim.fn.executable("rg") == 1 then
+	vim.opt.grepprg = "rg --vimgrep --smart-case --hidden"
+	vim.opt.grepformat = "%f:%l:%c:%m"
+elseif vim.fn.executable("grep") == 1 then
+	vim.opt.grepprg = "grep -nH -r -I"
+	vim.opt.grepformat = "%f:%l:%m"
+end
 vim.api.nvim_create_user_command("Grep", function(opts)
 	local pattern = opts.args
 
@@ -216,3 +231,7 @@ end, {
 })
 
 vim.cmd.colorscheme('retrobox')
+
+vim.keymap.set("n", ";c", function() vim.cmd("e " .. vim.fn.stdpath("config") .. "/init.lua") end)
+vim.keymap.set("n", ";f", function() vim.cmd("Find ") end)
+vim.keymap.set("n", ";r", function() vim.cmd("Grep ") end)
