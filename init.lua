@@ -235,3 +235,27 @@ vim.cmd.colorscheme('retrobox')
 vim.keymap.set("n", ";c", function() vim.cmd("e " .. vim.fn.stdpath("config") .. "/init.lua") end)
 vim.keymap.set("n", ";f", function() vim.cmd("Find ") end)
 vim.keymap.set("n", ";r", function() vim.cmd("Grep ") end)
+
+--plugins
+
+local function gh(repo)
+	return "https://github.com/" .. repo
+end
+vim.pack.add({ gh("skylarmb/torchlight.nvim") })
+require('torchlight').setup({
+    contrast = "stark",
+})
+local hl = vim.api.nvim_set_hl
+hl(0, 'TabLineFill', { bg = "none" })
+hl(0, 'TabLine', { bg = "none", fg="#979764" })
+hl(0, 'TabLineSel', { bg = "none", fg="#c6aa77" })
+hl(0, 'FloatBorder', { bg = "none", fg="#dcbb7e" })
+hl(0, 'Folded', { bg = "none", fg="#979764" })
+hl(0, 'StatusLine', { bg = "none", fg="#c6aa77" })
+hl(0, 'StatusLineNC', { bg = "none", fg="#414035" })
+hl(0, 'TelescopeBorder', { bg = "none", fg="#dcbb7e" })
+vim.pack.add({
+	gh("windwp/nvim-autopairs"),
+	gh("tpope/vim-fugitive"),
+})
+require("nvim-autopairs").setup({})
