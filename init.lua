@@ -176,14 +176,13 @@ local function find_files(pattern)
 		return {}
 	end
 
+    if pattern == "" then return files end
 	return vim.fn.matchfuzzy(files, pattern)
 end
-
 function _G.find_func(cmdarg, _cmdcomplete)
     return find_files(cmdarg)
 end
 vim.o.findfunc = "v:lua.find_func"
-
 vim.api.nvim_create_user_command("Find", function(opts)
 	local function run(pattern)
 		if not pattern or pattern == "" then
@@ -236,11 +235,34 @@ end, {
 	nargs = "?",
 })
 
-vim.cmd.colorscheme('retrobox')
+local function buffer_map()
+    local map = {}
+    for _, b in ipairs(vim.api.nvim_list_bufs()) do
+        local name = vim.api.nvim_buf_get_name(b)
+        if vim.bo[b].buflisted then
+            local key = name ~= "" and vim.fn.fnamemodify(name, ":.") or ("[No Name " .. b .. "]")
+            map[key] = b
+        end
+    end
+    return map
+end
+vim.api.nvim_create_user_command("Buffers", function(opts)
+    local b = buffer_map()[opts.args]
+    if b then
+        vim.cmd.buffer(b)
+    end
+end, {
+    nargs = 1,
+    complete = function(arglead)
+        local names = vim.tbl_keys(buffer_map())
+        return arglead == "" and names or vim.fn.matchfuzzy(names, arglead)
+    end
+})
 
 vim.keymap.set("n", ";c", function() vim.cmd("e " .. vim.fn.stdpath("config") .. "/init.lua") end)
 vim.keymap.set("n", ";f", ":find ")
 vim.keymap.set("n", ";r", ":Grep ")
+vim.keymap.set("n", ";b", ":Buffers ")
 
 --plugins
 
