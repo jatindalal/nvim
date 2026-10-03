@@ -161,12 +161,14 @@ local function find_files(pattern)
 			"fd",
 			"--type", "f",
 			"--hidden",
+            "--exclude", ".git"
 		})
     elseif vim.fn.executable("find") == 1 then
 		files = vim.fn.systemlist({
 			"find",
 			".",
 			"-type", "f",
+            "-not", "-path", "*/.git/*"
 		})
 	else
 		return {}
