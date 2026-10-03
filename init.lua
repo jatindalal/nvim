@@ -178,6 +178,12 @@ local function find_files(pattern)
 
 	return vim.fn.matchfuzzy(files, pattern)
 end
+
+function _G.find_func(cmdarg, _cmdcomplete)
+    return find_files(cmdarg)
+end
+vim.o.findfunc = "v:lua.find_func"
+
 vim.api.nvim_create_user_command("Find", function(opts)
 	local function run(pattern)
 		if not pattern or pattern == "" then
