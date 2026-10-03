@@ -239,7 +239,7 @@ end, {
 vim.cmd.colorscheme('retrobox')
 
 vim.keymap.set("n", ";c", function() vim.cmd("e " .. vim.fn.stdpath("config") .. "/init.lua") end)
-vim.keymap.set("n", ";f", function() vim.cmd("Find ") end)
+vim.keymap.set("n", ";f", function() vim.cmd("find ") end)
 vim.keymap.set("n", ";r", function() vim.cmd("Grep ") end)
 
 --plugins
