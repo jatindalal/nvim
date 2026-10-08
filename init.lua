@@ -210,11 +210,16 @@ local function gh(repo)
 end
 
 -- colorscheme
-vim.pack.add({ gh("skylarmb/torchlight.nvim") })
-require('torchlight').setup({
-    contrast = "stark",
-})
+vim.pack.add({ gh("sainnhe/gruvbox-material") })
+vim.g.gruvbox_material_transparent_background = 2
+vim.g.gruvbox_material_background = "medium"
+vim.g.gruvbox_material_cursor = "auto"
+vim.cmd.colorscheme("gruvbox-material")
 local hl = vim.api.nvim_set_hl
+hl(0, 'Normal', { bg = "none" })
+hl(0, 'Float', { bg = "none" })
+hl(0, 'NormalFloat', { bg = "none" })
+hl(0, 'FloatTitle', { bg = "none" })
 hl(0, 'TabLineFill', { bg = "none" })
 hl(0, 'TabLine', { bg = "none", fg="#979764" })
 hl(0, 'TabLineSel', { bg = "none", fg="#c6aa77" })
@@ -223,6 +228,7 @@ hl(0, 'Folded', { bg = "none", fg="#979764" })
 hl(0, 'StatusLine', { bg = "none", fg="#c6aa77" })
 hl(0, 'StatusLineNC', { bg = "none", fg="#414035" })
 hl(0, 'TelescopeBorder', { bg = "none", fg="#dcbb7e" })
+hl(0, 'Pmenu', { bg = "none" })
 
 -- editor
 vim.pack.add({
