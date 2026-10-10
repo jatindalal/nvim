@@ -210,25 +210,37 @@ local function gh(repo)
 end
 
 -- colorscheme
-vim.pack.add({ gh("sainnhe/gruvbox-material") })
-vim.g.gruvbox_material_transparent_background = 2
-vim.g.gruvbox_material_background = "medium"
-vim.g.gruvbox_material_cursor = "auto"
-vim.cmd.colorscheme("gruvbox-material")
-local hl = vim.api.nvim_set_hl
-hl(0, 'Normal', { bg = "none" })
-hl(0, 'Float', { bg = "none" })
-hl(0, 'NormalFloat', { bg = "none" })
-hl(0, 'FloatTitle', { bg = "none" })
-hl(0, 'TabLineFill', { bg = "none" })
-hl(0, 'TabLine', { bg = "none", fg="#979764" })
-hl(0, 'TabLineSel', { bg = "none", fg="#c6aa77" })
-hl(0, 'FloatBorder', { bg = "none", fg="#dcbb7e" })
-hl(0, 'Folded', { bg = "none", fg="#979764" })
-hl(0, 'StatusLine', { bg = "none", fg="#c6aa77" })
-hl(0, 'StatusLineNC', { bg = "none", fg="#414035" })
-hl(0, 'TelescopeBorder', { bg = "none", fg="#dcbb7e" })
-hl(0, 'Pmenu', { bg = "none" })
+vim.pack.add({ gh("rebelot/kanagawa.nvim") })
+require("kanagawa").setup({
+	transparent = true,
+	terminalColors = true,
+	overrides = function(colors) -- add/modify highlights
+		local theme = colors.theme
+		return {
+			TelescopeNormal = { bg = "NONE" },
+			TelescopeBorder = { bg = "NONE" },
+			TelescopePromptNormal = { bg = "NONE" },
+			TelescopePromptBorder = { bg = "NONE" },
+			TelescopeResultsNormal = { bg = "NONE" },
+			TelescopeResultsBorder = { bg = "NONE" },
+			TelescopePreviewNormal = { bg = "NONE" },
+			TelescopePreviewBorder = { bg = "NONE" },
+			TelescopeTitle = { fg = theme.ui.special, bg = "NONE", bold = true },
+			TabLineFill = { bg = "None" },
+			TabLineSel = { bg = "None" },
+		}
+	end,
+	colors = {
+		theme = {
+			all = {
+				ui = {
+					bg_gutter = "none",
+				},
+			},
+		},
+	},
+})
+vim.cmd.colorscheme("kanagawa")
 
 -- editor
 vim.pack.add({
@@ -693,6 +705,7 @@ require("blink.cmp").setup({
 	fuzzy = { implementation = "lua" },
 	signature = { enabled = false },
 })
+local hl = vim.api.nvim_set_hl
 hl(0, 'BlinkCmpMenu',  { bg = 'none' })
 hl(0, 'BlinkCmpMenuSelection',  { bg = '#979764', fg='#010101' })
 hl(0, 'BlinkCmpMenuBorder', {fg = '#dcbb7e', bg='none'})
