@@ -141,11 +141,21 @@ vim.api.nvim_create_autocmd("BufRead", {
 		vim.bo.filetype = "dosini"
 	end,
 })
+vim.api.nvim_create_autocmd("BufEnter", {
+	callback = function()
+		if vim.bo.buftype == "" then
+			vim.opt_local.cursorlineopt = "number"
+		else
+			vim.opt_local.cursorlineopt = "both"
+		end
+	end,
+})
 
 local function find_files(pattern)
 	local files = vim.fn.systemlist({
 		"fd",
-		"--type", "f",
+		"--type",
+		"f",
 		"--hidden",
 	})
 
@@ -209,12 +219,20 @@ local function gh(repo)
 	return "https://github.com/" .. repo
 end
 
--- colorscheme
-vim.pack.add({ gh("rebelot/kanagawa.nvim") })
+-- editor
+vim.pack.add({
+	gh("rebelot/kanagawa.nvim"),
+	gh("windwp/nvim-autopairs"),
+	gh("tpope/vim-fugitive"),
+	gh("karb94/neoscroll.nvim"),
+	gh("lukas-reineke/indent-blankline.nvim"),
+	gh("nvim-tree/nvim-web-devicons"),
+	gh("folke/flash.nvim"),
+})
 require("kanagawa").setup({
 	transparent = true,
 	terminalColors = true,
-	overrides = function(colors) -- add/modify highlights
+	overrides = function(colors)
 		local theme = colors.theme
 		return {
 			TelescopeNormal = { bg = "NONE" },
@@ -230,24 +248,22 @@ require("kanagawa").setup({
 			TabLineSel = { bg = "None" },
 		}
 	end,
-	colors = {
-		theme = {
-			all = {
-				ui = {
-					bg_gutter = "none",
-				},
-			},
-		},
-	},
+	colors = { theme = { all = { ui = { bg_gutter = "none" } } } },
 })
 vim.cmd.colorscheme("kanagawa")
-
--- editor
-vim.pack.add({
-	gh("windwp/nvim-autopairs"),
-	gh("tpope/vim-fugitive"),
-})
+vim.opt.cursorline = true
 require("nvim-autopairs").setup({})
+require("neoscroll").setup({
+	mappings = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "<C-y>", "<C-e>", "zt", "zz", "zb" },
+	easing = "quadratic",
+	duration_multiplier = 1.2,
+})
+require("ibl").setup({ indent = { char = "⋮" } })
+require("flash").toggle()
+vim.keymap.set({ "n", "x", "o" }, "s", function()
+	require("flash").jump()
+end)
+
 -- picker
 vim.pack.add({
 	gh("nvim-telescope/telescope.nvim"),
@@ -290,7 +306,7 @@ vim.pack.add({
 	gh("nvim-mini/mini.files"),
 	gh("nvim-mini/mini.icons"),
 })
-require("mini.icons").setup({ style = "ascii" })
+require("mini.icons").setup({})
 require("mini.files").setup({
 	options = { use_as_default_explorer = true },
 	mappings = { go_in_plus = "<CR>" },
@@ -320,15 +336,15 @@ conform.setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
 		sh = { "shfmt" },
-		python = { "black", "ruff_format" },
-		json = { "prettier", "jq" },
+		python = { "black" },
+		json = { "prettier" },
 		cpp = { "clang_format" },
 		c = { "clang_format" },
 	},
 	formatters = {
 		clang_format = {
 			args = {
-				"--style={BasedOnStyle: WebKit, IndentWidth: 4, TabWidth: 4, UseTab: Always, AccessModifierOffset: -4, Cpp11BracedListStyle: false, ReferenceAlignment: Right, PointerAlignment: Right}",
+				"--style={BasedOnStyle: WebKit, IndentWidth: 4, TabWidth: 4, UseTab: Never, AccessModifierOffset: -4, Cpp11BracedListStyle: false, ReferenceAlignment: Right, PointerAlignment: Right}",
 			},
 		},
 	},
@@ -364,7 +380,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 			map("<leader>th", function()
 				vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = event.buf }))
 			end, "[T]oggle Inlay [H]ints")
-			client.server_capabilities.semanticTokensProvider = nil
+			-- client.server_capabilities.semanticTokensProvider = nil
 		end
 	end,
 })
@@ -376,7 +392,6 @@ vim.diagnostic.config({
 local servers = {
 	clangd = {},
 	dockerls = {},
-	sqlls = {},
 	jsonls = {},
 	yamlls = {},
 	basedpyright = {},
@@ -576,10 +591,10 @@ dap.configurations.python = { launch_current_file, launch_file, attach_config }
 
 vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, link = "Visual" })
 local dap_icons = {
-	Stopped = { "▶", "DiagnosticWarn", "DapStoppedLine" },
-	Breakpoint = "●",
-	BreakpointCondition = "◐",
-	BreakpointRejected = "○",
+	Stopped = { "", "DiagnosticWarn", "DapStoppedLine" },
+	Breakpoint = "",
+	BreakpointCondition = "",
+	BreakpointRejected = "",
 	LogPoint = "◆",
 }
 for name, sign in pairs(dap_icons) do
@@ -648,26 +663,7 @@ vim.keymap.set({ "n" }, "<leader>dw", function()
 	require("dap.ui.widgets").hover()
 end)
 local dapui = require("dapui")
-dapui.setup({
-	icons = {
-		expanded = "▾",
-		collapsed = "▸",
-		current_frame = "▸",
-	},
-	controls = {
-		icons = {
-			pause = "॥",
-			play = "▶",
-			step_into = "↓",
-			step_over = "↷",
-			step_out = "↑",
-			step_back = "↺",
-			run_last = "⟳",
-			terminate = "■",
-			disconnect = "⏏",
-		},
-	},
-})
+dapui.setup({})
 vim.keymap.set({ "n" }, "<leader>du", function()
 	dapui.toggle()
 end)
@@ -693,11 +689,8 @@ require("blink.cmp").setup({
 	},
 	completion = {
 		menu = {
-            border = 'rounded',
+			border = "rounded",
 			auto_show = true,
-			draw = {
-				columns = { { "label", "label_description", gap = 0 } },
-			},
 		},
 	},
 	sources = { default = { "lsp", "path" } },
@@ -705,8 +698,74 @@ require("blink.cmp").setup({
 	fuzzy = { implementation = "lua" },
 	signature = { enabled = false },
 })
+
 local hl = vim.api.nvim_set_hl
-hl(0, 'BlinkCmpMenu',  { bg = 'none' })
-hl(0, 'BlinkCmpMenuSelection',  { bg = '#979764', fg='#010101' })
-hl(0, 'BlinkCmpMenuBorder', {fg = '#dcbb7e', bg='none'})
-hl(0, 'BlinkCmpScrollBarThumb', {fg = '#dcbb7e', bg='#dcbb7e'})
+hl(0, "BlinkCmpMenu", { bg = "none" })
+hl(0, "BlinkCmpMenuSelection", { bg = "#ccccaa", fg = "#010101" })
+hl(0, "BlinkCmpMenuBorder", { fg = "#ccccaa", bg = "none" })
+hl(0, "BlinkCmpScrollBarThumb", { fg = "#ccccaa", bg = "#ccccaa" })
+hl(0, "BlinkCmpDoc", { bg = "none" })
+hl(0, "BlinkCmpDocBorder", { bg = "none", fg = "#ccccaa" })
+hl(0, "BlinkCmpDocSeparator", { bg = "none", fg = "#ccccaa" })
+hl(0, "BlinkCmpSignatureHelp", { bg = "none" })
+hl(0, "BlinkCmpSignatureHelpBorder", { bg = "none", fg = "#ccccaa" })
+
+-- markdown
+vim.pack.add({
+	"https://github.com/nvim-treesitter/nvim-treesitter",
+	"https://github.com/nvim-mini/mini.icons",
+	"https://github.com/MeanderingProgrammer/render-markdown.nvim",
+})
+require("render-markdown").setup({})
+
+-- agentic
+vim.pack.add({
+	gh("carlos-algms/agentic.nvim"),
+})
+local agentic = require("agentic")
+agentic.setup({
+	provider = "pi-acp",
+})
+vim.keymap.set({ "n", "v", "i" }, "<C-\\>", function()
+	agentic.toggle()
+end)
+vim.keymap.set({ "n", "v" }, "<C-'>", function()
+	agentic.add_selection_or_file_to_context()
+end)
+vim.keymap.set("n", "<C-;>", function()
+	require("telescope.builtin").find_files({
+		attach_mappings = function(prompt_bufnr, map)
+			local actions = require("telescope.actions")
+			local state = require("telescope.actions.state")
+
+			local function add_files()
+				local picker = state.get_current_picker(prompt_bufnr)
+				local files = {}
+
+				for _, entry in ipairs(picker:get_multi_selection()) do
+					files[#files + 1] = entry.path or entry.filename
+				end
+
+				if #files == 0 then
+					local entry = state.get_selected_entry()
+					if entry then
+						files[1] = entry.path or entry.filename
+					end
+				end
+
+				actions.close(prompt_bufnr)
+
+				if #files > 0 then
+					require("agentic").add_files_to_context({
+						files = files,
+					})
+				end
+			end
+
+			map("i", "<C-s>", add_files)
+			map("n", "<C-s>", add_files)
+
+			return true
+		end,
+	})
+end, { desc = "Add files to Agentic context" })
