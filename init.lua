@@ -143,7 +143,7 @@ vim.api.nvim_create_autocmd("BufRead", {
 })
 vim.api.nvim_create_autocmd("BufEnter", {
 	callback = function()
-		if vim.bo.buftype == "" || vim.bo.buftype == "terminal" then
+		if vim.bo.buftype == "" or vim.bo.buftype == "terminal" then
 			vim.opt_local.cursorlineopt = "number"
 		else
 			vim.opt_local.cursorlineopt = "both"
