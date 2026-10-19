@@ -33,7 +33,6 @@ vim.o.foldmethod = "expr"
 vim.o.foldexpr = "v:lua.vim.lsp.foldexpr()"
 vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
-vim.opt.fillchars:append({ eob = " " })
 vim.o.exrc = true
 vim.o.secure = true
 
