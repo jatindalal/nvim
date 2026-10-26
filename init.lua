@@ -224,7 +224,7 @@ vim.pack.add({
 	gh("windwp/nvim-autopairs"),
 	gh("tpope/vim-fugitive"),
 	gh("karb94/neoscroll.nvim"),
-	gh("lukas-reineke/indent-blankline.nvim"),
+    gh("saghen/blink.indent"),
 	gh("nvim-tree/nvim-web-devicons"),
 	gh("folke/flash.nvim"),
 })
@@ -257,7 +257,10 @@ require("neoscroll").setup({
 	easing = "quadratic",
 	duration_multiplier = 1.2,
 })
-require("ibl").setup({ indent = { char = "⋮" } })
+require("blink.indent").setup({
+    static = { char = '⋮' },
+    scope = { char = '⋮' }
+})
 require("flash").toggle()
 vim.keymap.set({ "n", "x", "o" }, "s", function()
 	require("flash").jump()
