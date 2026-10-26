@@ -51,7 +51,6 @@ vim.keymap.set({ "n" }, "<S-l>", vim.cmd.tabnext)
 vim.keymap.set({ "n" }, "<S-h>", vim.cmd.tabprev)
 vim.keymap.set({ "n" }, "ss", vim.cmd.split)
 vim.keymap.set({ "n" }, "sv", vim.cmd.vsplit)
-vim.keymap.set({ "n" }, "<leader>e", vim.cmd.Explore)
 vim.keymap.set({ "n" }, "<leader>r", function()
 	vim.cmd("source " .. vim.fn.stdpath("config") .. "/init.lua")
 	vim.notify("Reloaded Config", vim.log.levels.INFO, {})
@@ -100,6 +99,20 @@ vim.keymap.set(
 vim.keymap.set("n", "<leader>q", vim.diagnostic.setloclist, {
 	desc = "Diagnostics to location list",
 })
+vim.keymap.set({ "n" }, "<leader>e", function ()
+    if vim.bo.filetype == "netrw" then
+        local prev = vim.fn.bufnr('#')
+
+        if prev ~= -1 and vim.api.nvim_buf_is_valid(prev)
+            and vim.bo[prev].filetype ~= "netrw" then
+            vim.cmd.buffer(prev)
+        else
+            vim.cmd.enew()
+        end
+    else
+        vim.cmd.Explore()
+    end
+end)
 
 -- autocmds
 vim.api.nvim_create_autocmd("TextYankPost", {
@@ -302,31 +315,6 @@ vim.keymap.set("n", ";r", function() builtin.live_grep() end)
 vim.keymap.set("n", ";l", function() builtin.current_buffer_fuzzy_find() end)
 vim.keymap.set("n", ";b", function() builtin.buffers() end)
 vim.keymap.set("n", ";c", function() vim.cmd("e " .. vim.fn.stdpath("config") .. "/init.lua") end)
-
--- files
-vim.pack.add({
-	gh("nvim-mini/mini.files"),
-	gh("nvim-mini/mini.icons"),
-})
-require("mini.icons").setup({})
-require("mini.files").setup({
-	options = { use_as_default_explorer = true },
-	mappings = { go_in_plus = "<CR>" },
-	windows = {
-		preview = false,
-	},
-})
-
-vim.keymap.set("n", "<leader>e", function()
-	if not MiniFiles.close() then
-		MiniFiles.open(vim.uv.cwd(), true)
-	end
-end)
-vim.keymap.set("n", "<leader>E", function()
-	if not MiniFiles.close() then
-		MiniFiles.open(vim.uv.cwd(), false)
-	end
-end)
 
 -- formatter
 vim.pack.add({
