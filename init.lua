@@ -224,7 +224,7 @@ end
 
 -- editor
 vim.pack.add({
-    gh("metalelf0/black-metal-theme-neovim"),
+    gh("duxlabs-dev/base46"),
 	gh("windwp/nvim-autopairs"),
 	gh("tpope/vim-fugitive"),
 	gh("karb94/neoscroll.nvim"),
@@ -232,12 +232,10 @@ vim.pack.add({
 	gh("nvim-tree/nvim-web-devicons"),
 	gh("folke/flash.nvim"),
 })
-require("black-metal").setup({
-    trve = true,
-    theme = "bathory",
-    transparent = true,
+require('base46').setup({
+    transparency = true,
 })
-require("black-metal").load()
+vim.cmd.colorscheme("base46-gruvchad")
 require("nvim-autopairs").setup({})
 require("neoscroll").setup({
 	mappings = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "<C-y>", "<C-e>", "zt", "zz", "zb" },
