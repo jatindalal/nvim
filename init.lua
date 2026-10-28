@@ -153,15 +153,6 @@ vim.api.nvim_create_autocmd("BufRead", {
 		vim.bo.filetype = "dosini"
 	end,
 })
-vim.api.nvim_create_autocmd("BufEnter", {
-	callback = function()
-		if vim.bo.buftype == "" or vim.bo.buftype == "terminal" then
-			vim.opt_local.cursorlineopt = "number"
-		else
-			vim.opt_local.cursorlineopt = "both"
-		end
-	end,
-})
 
 local function find_files(pattern)
 	local files = vim.fn.systemlist({
@@ -233,7 +224,7 @@ end
 
 -- editor
 vim.pack.add({
-	gh("rebelot/kanagawa.nvim"),
+    gh("metalelf0/black-metal-theme-neovim"),
 	gh("windwp/nvim-autopairs"),
 	gh("tpope/vim-fugitive"),
 	gh("karb94/neoscroll.nvim"),
@@ -241,29 +232,12 @@ vim.pack.add({
 	gh("nvim-tree/nvim-web-devicons"),
 	gh("folke/flash.nvim"),
 })
-require("kanagawa").setup({
-	transparent = true,
-	terminalColors = true,
-	overrides = function(colors)
-		local theme = colors.theme
-		return {
-			TelescopeNormal = { bg = "NONE" },
-			TelescopeBorder = { bg = "NONE" },
-			TelescopePromptNormal = { bg = "NONE" },
-			TelescopePromptBorder = { bg = "NONE" },
-			TelescopeResultsNormal = { bg = "NONE" },
-			TelescopeResultsBorder = { bg = "NONE" },
-			TelescopePreviewNormal = { bg = "NONE" },
-			TelescopePreviewBorder = { bg = "NONE" },
-			TelescopeTitle = { fg = theme.ui.special, bg = "NONE", bold = true },
-			TabLineFill = { bg = "None" },
-			TabLineSel = { bg = "None" },
-		}
-	end,
-	colors = { theme = { all = { ui = { bg_gutter = "none" } } } },
+require("black-metal").setup({
+    trve = true,
+    theme = "bathory",
+    transparent = true,
 })
-vim.cmd.colorscheme("kanagawa")
-vim.opt.cursorline = true
+require("black-metal").load()
 require("nvim-autopairs").setup({})
 require("neoscroll").setup({
 	mappings = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "<C-y>", "<C-e>", "zt", "zz", "zb" },
