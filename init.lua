@@ -12,7 +12,6 @@ vim.o.smarttab = true
 vim.o.softtabstop = 0
 vim.o.expandtab = true
 vim.o.wrap = false
-vim.o.mouse = ""
 vim.o.swapfile = false
 vim.o.splitbelow = true
 vim.o.splitright = true
@@ -236,6 +235,8 @@ require('base46').setup({
     transparency = true,
 })
 vim.cmd.colorscheme("base46-gruvchad")
+local hl = vim.api.nvim_set_hl
+hl(0, "StatusLineNC", { bg = "none" })
 require("nvim-autopairs").setup({})
 require("neoscroll").setup({
 	mappings = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "<C-y>", "<C-e>", "zt", "zz", "zb" },
