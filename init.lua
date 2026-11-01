@@ -223,7 +223,7 @@ end
 
 -- editor
 vim.pack.add({
-    gh("duxlabs-dev/base46"),
+    gh("ellisonleao/gruvbox.nvim"),
 	gh("windwp/nvim-autopairs"),
 	gh("tpope/vim-fugitive"),
 	gh("karb94/neoscroll.nvim"),
@@ -231,12 +231,8 @@ vim.pack.add({
 	gh("nvim-tree/nvim-web-devicons"),
 	gh("folke/flash.nvim"),
 })
-require('base46').setup({
-    transparency = true,
-})
-vim.cmd.colorscheme("base46-gruvchad")
-local hl = vim.api.nvim_set_hl
-hl(0, "StatusLineNC", { bg = "none" })
+vim.o.background = "light"
+vim.cmd.colorscheme("gruvbox")
 require("nvim-autopairs").setup({})
 require("neoscroll").setup({
 	mappings = { "<C-u>", "<C-d>", "<C-b>", "<C-f>", "<C-y>", "<C-e>", "zt", "zz", "zb" },
