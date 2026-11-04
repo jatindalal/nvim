@@ -230,7 +230,7 @@ vim.pack.add({
     gh("saghen/blink.indent"),
 	gh("folke/flash.nvim"),
 })
-vim.o.background = "light"
+-- vim.o.background = "light"
 vim.cmd.colorscheme("gruvbox")
 require("nvim-autopairs").setup({})
 require("neoscroll").setup({
@@ -667,7 +667,7 @@ require("blink.cmp").setup({
 	completion = {
 		menu = {
 			border = "rounded",
-			auto_show = false,
+			auto_show = true,
 			draw = {
 				columns = { { "label", "label_description", gap = 0 } },
 			},
