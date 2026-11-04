@@ -228,7 +228,6 @@ vim.pack.add({
 	gh("tpope/vim-fugitive"),
 	gh("karb94/neoscroll.nvim"),
     gh("saghen/blink.indent"),
-	gh("nvim-tree/nvim-web-devicons"),
 	gh("folke/flash.nvim"),
 })
 vim.o.background = "light"
@@ -295,15 +294,15 @@ conform.setup({
 	formatters_by_ft = {
 		lua = { "stylua" },
 		sh = { "shfmt" },
-		python = { "black" },
-		json = { "prettier" },
+		python = { "black", "ruff_format" },
+		json = { "prettier", "jq" },
 		cpp = { "clang_format" },
 		c = { "clang_format" },
 	},
 	formatters = {
 		clang_format = {
 			args = {
-				"--style={BasedOnStyle: WebKit, IndentWidth: 4, TabWidth: 4, UseTab: Never, AccessModifierOffset: -4, Cpp11BracedListStyle: false, ReferenceAlignment: Right, PointerAlignment: Right}",
+				"--style={BasedOnStyle: WebKit, IndentWidth: 4, TabWidth: 4, UseTab: Always, AccessModifierOffset: -4, Cpp11BracedListStyle: false, ReferenceAlignment: Right, PointerAlignment: Right}",
 			},
 		},
 	},
@@ -550,10 +549,10 @@ dap.configurations.python = { launch_current_file, launch_file, attach_config }
 
 vim.api.nvim_set_hl(0, "DapStoppedLine", { default = true, link = "Visual" })
 local dap_icons = {
-	Stopped = { "", "DiagnosticWarn", "DapStoppedLine" },
-	Breakpoint = "",
-	BreakpointCondition = "",
-	BreakpointRejected = "",
+	Stopped = { "▶", "DiagnosticWarn", "DapStoppedLine" },
+	Breakpoint = "●",
+	BreakpointCondition = "◐",
+	BreakpointRejected = "○",
 	LogPoint = "◆",
 }
 for name, sign in pairs(dap_icons) do
@@ -622,7 +621,26 @@ vim.keymap.set({ "n" }, "<leader>dw", function()
 	require("dap.ui.widgets").hover()
 end)
 local dapui = require("dapui")
-dapui.setup({})
+dapui.setup({
+	icons = {
+		expanded = "▾",
+		collapsed = "▸",
+		current_frame = "▸",
+	},
+	controls = {
+		icons = {
+			pause = "॥",
+			play = "▶",
+			step_into = "↓",
+			step_over = "↷",
+			step_out = "↑",
+			step_back = "↺",
+			run_last = "⟳",
+			terminate = "■",
+			disconnect = "⏏",
+		},
+	},
+})
 vim.keymap.set({ "n" }, "<leader>du", function()
 	dapui.toggle()
 end)
@@ -649,7 +667,10 @@ require("blink.cmp").setup({
 	completion = {
 		menu = {
 			border = "rounded",
-			auto_show = true,
+			auto_show = false,
+			draw = {
+				columns = { { "label", "label_description", gap = 0 } },
+			},
 		},
 	},
 	sources = { default = { "lsp", "path" } },
@@ -672,59 +693,7 @@ hl(0, "BlinkCmpSignatureHelpBorder", { bg = "none", fg = "#ccccaa" })
 -- markdown
 vim.pack.add({
 	"https://github.com/nvim-treesitter/nvim-treesitter",
-	"https://github.com/nvim-mini/mini.icons",
 	"https://github.com/MeanderingProgrammer/render-markdown.nvim",
 })
 require("render-markdown").setup({})
 
--- agentic
-vim.pack.add({
-	gh("carlos-algms/agentic.nvim"),
-})
-local agentic = require("agentic")
-agentic.setup({
-	provider = "pi-acp",
-})
-vim.keymap.set({ "n", "v", "i" }, "<C-\\>", function()
-	agentic.toggle()
-end)
-vim.keymap.set({ "n", "v" }, "<C-'>", function()
-	agentic.add_selection_or_file_to_context()
-end)
-vim.keymap.set("n", "<C-;>", function()
-	require("telescope.builtin").find_files({
-		attach_mappings = function(prompt_bufnr, map)
-			local actions = require("telescope.actions")
-			local state = require("telescope.actions.state")
-
-			local function add_files()
-				local picker = state.get_current_picker(prompt_bufnr)
-				local files = {}
-
-				for _, entry in ipairs(picker:get_multi_selection()) do
-					files[#files + 1] = entry.path or entry.filename
-				end
-
-				if #files == 0 then
-					local entry = state.get_selected_entry()
-					if entry then
-						files[1] = entry.path or entry.filename
-					end
-				end
-
-				actions.close(prompt_bufnr)
-
-				if #files > 0 then
-					require("agentic").add_files_to_context({
-						files = files,
-					})
-				end
-			end
-
-			map("i", "<C-s>", add_files)
-			map("n", "<C-s>", add_files)
-
-			return true
-		end,
-	})
-end, { desc = "Add files to Agentic context" })
