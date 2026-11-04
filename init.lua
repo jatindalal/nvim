@@ -667,7 +667,7 @@ require("blink.cmp").setup({
 	completion = {
 		menu = {
 			border = "rounded",
-			auto_show = true,
+			auto_show = false,
 			draw = {
 				columns = { { "label", "label_description", gap = 0 } },
 			},
