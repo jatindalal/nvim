@@ -1,6 +1,7 @@
+----------
+-- options
+----------
 vim.g.mapleader = " "
--- vim.o.number = true
--- vim.o.relativenumber = true
 vim.g.clipboard = "osc52"
 vim.o.ignorecase = true
 vim.o.smartcase = true
@@ -12,7 +13,6 @@ vim.o.smarttab = true
 vim.o.softtabstop = 0
 vim.o.expandtab = true
 vim.o.wrap = false
-vim.o.swapfile = false
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.synmaxcol = 240
@@ -34,6 +34,9 @@ vim.o.foldlevel = 99
 vim.o.foldlevelstart = 99
 vim.o.exrc = true
 vim.o.secure = true
+vim.o.swapfile = false
+vim.opt.undodir = vim.fn.expand("~/.cache/nvim/undodir")
+vim.opt.guicursor = "n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor,sm:block-blinkwait175-blinkoff150-blinkon175"
 
 -- keymaps
 vim.keymap.set({ "t" }, "<Esc>", "<C-\\><C-n>")
@@ -113,7 +116,9 @@ vim.keymap.set({ "n" }, "<leader>e", function ()
     end
 end)
 
+-----------
 -- autocmds
+-----------
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking (copying) text",
 	callback = function()
@@ -214,9 +219,24 @@ end, {
 	nargs = "?",
 })
 
---
+vim.api.nvim_create_user_command("YankRelativePath", function(opts)
+    local path = vim.fn.expand("%:.") .. "#L" .. vim.fn.line(".")
+	vim.fn.setreg("+", path)
+	vim.notify("Yanked: " .. path, vim.log.levels.INFO)
+end, {
+    nargs = 0,
+})
+vim.api.nvim_create_user_command("YankPath", function(opts)
+    local path = vim.fn.expand("%:p") .. "#L" .. vim.fn.line(".")
+	vim.fn.setreg("+", path)
+	vim.notify("Yanked: " .. path, vim.log.levels.INFO)
+end, {
+    nargs = 0,
+})
+
+----------
 -- plugins
---
+----------
 local function gh(repo)
 	return "https://github.com/" .. repo
 end
@@ -229,6 +249,8 @@ vim.pack.add({
 	gh("karb94/neoscroll.nvim"),
     gh("saghen/blink.indent"),
 	gh("folke/flash.nvim"),
+    gh("esmuellert/codediff.nvim"),
+    gh("stevearc/oil.nvim"),
 })
 -- vim.o.background = "light"
 vim.cmd.colorscheme("gruvbox")
@@ -246,6 +268,48 @@ require("flash").toggle()
 vim.keymap.set({ "n", "x", "o" }, "s", function()
 	require("flash").jump()
 end)
+require("codediff").setup({
+	explorer = {
+		width = 50,
+		auto_open_on_cursor = true,
+		view_mode = "tree",
+		line_stats = { enabled = true, },
+	},
+	diff = {
+		compact = true,
+		compact_context_lines = 8,
+		compact_sync_folds = true,
+	},
+	keymaps = {
+		view = {},
+	},
+})
+require('oil').setup({
+	columns = {
+		"icon",
+		{ "permissions", highlight = "Type" },
+		{ "size", highlight = "String" },
+		{ "mtime", highlight = "Keyword" },
+	},
+	keymaps = {
+		["h"] = { "actions.parent", mode = "n" },
+		["q"] = { "actions.close", mode = "n" },
+	},
+	view_options = {
+		show_hidden = true,
+	},
+	float = {
+		border = "rounded",
+		win_options = {
+			winblend = 0,
+		},
+		max_width = 200,
+	},
+})
+vim.keymap.set("n", "<leader>e", function()
+    require("oil").open_float(nil, { })
+end)
+
 
 -- picker
 vim.pack.add({
